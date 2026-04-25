@@ -14,12 +14,14 @@ A comprehensive interactive course guide for Software Configuration Management.
 
 ## How to use
 
-Download the guide for your operating system and open it in any web browser (Safari, Chrome, Edge). No internet connection required after downloading.
+Open the guide for your operating system directly in any web browser — no download or installation needed.
 
-| File | Operating System |
-|------|-----------------|
-| [git-github-guide-macos.html](./git-github-guide-macos.html) | macOS (MacBook, iMac) |
-| [git-github-guide-windows.html](./git-github-guide-windows.html) | Windows |
+| Operating System | Link |
+|-----------------|------|
+| macOS (MacBook, iMac) | https://waleedju88.github.io/git-github-guide/git-github-guide-macos.html |
+| Windows | https://waleedju88.github.io/git-github-guide/git-github-guide-windows.html |
+
+You can also download the files and open them offline if you prefer. No internet connection is required after opening.
 
 ---
 
