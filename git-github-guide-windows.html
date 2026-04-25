@@ -945,6 +945,2953 @@ node_modules/    <span class="c"># installed packages — always re-installable<
       </div>
     </div>
 
+
+    <div class="section-label">Writing good commit messages</div>
+    <div class="card">
+      <p>A good commit message is like a subject line in an email — short, clear, and written in the imperative mood.</p>
+      <div class="code-block"><span class="c"># ✓ Good commit messages</span>
+<span class="str">"Add user login form"</span>
+<span class="str">"Fix broken nav link on mobile"</span>
+<span class="str">"Remove unused CSS variables"</span>
+<span class="str">"Update README with installation steps"</span>
+
+<span class="c"># ✗ Bad commit messages</span>
+<span class="str">"fix"</span>
+<span class="str">"wip"</span>
+<span class="str">"changes"</span>
+<span class="str">"asdfgh"</span></div>
+      <div class="tip tip-info">Rule of thumb: your message should complete the sentence <em>"If applied, this commit will…"</em> — for example, "If applied, this commit will <strong>add user login form</strong>."</div>
+    </div>
+
+    <div class="section-label">Reverting to a specific commit</div>
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--orange-light);color:var(--orange)">&#8635;</div>
+        <div class="accordion-title">How to go back to a previous version of your code</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>Sometimes you commit something that breaks the code and want to go back to a version that was working. We will use the Python calculator to demonstrate this with a real broken-code scenario, then use the safest method to fix it.</p>
+
+        <div class="section-label" style="margin:12px 0 8px">&#128308; Live demo &#8212; break the calculator then revert</div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text)">Step 1 &#8212; Introduce a bug and commit it</p>
+        <p>Edit <code>calculator.py</code> and intentionally break the <code>divide</code> function by removing the safety check and introducing a syntax error:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Edit calculator.py &#8212; replace the divide function with this broken version:</span>
+
+<span class="kw">def</span> <span class="cmd">divide</span>(a, b):
+    <span class="str">"""Return the result of a divided by b."""</span>
+    <span class="kw">return</span> a /      <span class="c"># syntax error &#8212; missing b</span>
+
+<span class="c"># Commit the broken code</span>
+<span class="cmd">git add</span> calculator.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Update divide function"</span>
+
+<span class="c"># Run the calculator &#8212; it crashes immediately</span>
+<span class="cmd">python</span> main.py
+<span class="c"># SyntaxError: invalid syntax</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Step 2 &#8212; Read the history to find the hash of the broken commit</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git log</span> <span class="fl">--oneline</span>
+<span class="c"># d7f3a19  Update divide function        &#8592; the broken commit (most recent)
+# e4a91f2  Update main to show division result
+# b3c72d1  Add divide function to calculator
+# 9e2d410  Add calculator and main modules
+# 4f1a803  Add .gitignore to ignore .DS_Store</span></div>
+        <p>The broken commit is <code>d7f3a19</code>. That is the hash we will revert. Copy the first 7 characters from your own terminal output &#8212; the hash will be different on your machine.</p>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Step 3 &#8212; Revert the broken commit by its hash</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Revert the specific broken commit using its hash</span>
+<span class="cmd">git revert</span> d7f3a19
+<span class="c"># Git opens your text editor with a pre-filled commit message:
+# "Revert: Update divide function"
+# Save the file and close the editor &#8212; the revert commit is created</span></div>
+
+        <div class="tip tip-info"><strong>Editor opens automatically?</strong> If you see a terminal text editor (like Vim or Nano), type <code>:wq</code> then Enter to save and exit in Vim, or press <code>Ctrl+X</code> then <code>Y</code> then Enter in Nano. To avoid this, add <code>--no-edit</code> to keep the default message without opening an editor:</div>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Skip the editor &#8212; use the default revert message automatically</span>
+<span class="cmd">git revert</span> d7f3a19 <span class="fl">--no-edit</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Step 4 &#8212; Verify the fix</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Run the calculator &#8212; it works again</span>
+<span class="cmd">python</span> main.py
+<span class="c"># Addition:       5 + 3 = 8
+# Subtraction:    5 - 3 = 2
+# ...all outputs working normally</span>
+
+<span class="c"># Read the history &#8212; notice the original broken commit is still there</span>
+<span class="cmd">git log</span> <span class="fl">--oneline</span>
+<span class="c"># a91c4f1  Revert "Update divide function"  &#8592; new commit that undid the bug
+# d7f3a19  Update divide function            &#8592; broken commit still in history
+# e4a91f2  Update main to show division result
+# b3c72d1  Add divide function to calculator
+# 9e2d410  Add calculator and main modules</span></div>
+
+        <div class="tip tip-success"><strong>This is the key point:</strong> <code>git revert</code> never deletes or rewrites history. The broken commit <code>d7f3a19</code> is still visible in the log. A new commit was added on top that undoes its changes. This is safe to push to GitHub and safe for teammates &#8212; nobody&#8217;s history is disturbed.</div>
+
+        <hr class="divider">
+        <div class="section-label" style="margin:4px 0 10px">&#8505; Other options &#8212; for your information</div>
+
+        <div class="accordion">
+          <div class="accordion-header" onclick="toggleAcc(this)" style="padding:10px 14px">
+            <div style="font-size:13px;font-weight:500;flex:1">Option B &#8212; <code>git reset</code> &nbsp;<span class="badge badge-warn">rewrites history &#8212; local only</span></div>
+            <div class="accordion-chevron">&#9660;</div>
+          </div>
+          <div class="accordion-body" style="padding:0 14px 14px">
+            <p>Moves the branch pointer backwards to a specific commit, removing commits after it from the history. Use this <strong>only on local work that has not been pushed</strong> to GitHub yet.</p>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># --soft: roll back history, keep changes staged</span>
+<span class="cmd">git reset</span> <span class="fl">--soft</span> b3c72d1
+
+<span class="c"># --mixed (default): roll back history, keep changes unstaged</span>
+<span class="cmd">git reset</span> b3c72d1
+
+<span class="c"># --hard: roll back history AND permanently delete all changes</span>
+<span class="cmd">git reset</span> <span class="fl">--hard</span> b3c72d1
+<span class="c"># WARNING: --hard cannot be undone</span></div>
+            <div class="tip tip-warn"><strong>Never use <code>git reset</code> on commits already pushed to GitHub.</strong> It rewrites history and breaks everyone who pulled those commits.</div>
+          </div>
+        </div>
+
+        <div class="accordion" style="margin-top:8px">
+          <div class="accordion-header" onclick="toggleAcc(this)" style="padding:10px 14px">
+            <div style="font-size:13px;font-weight:500;flex:1">Option C &#8212; <code>git checkout &lt;hash&gt;</code> &nbsp;<span class="badge" style="background:var(--blue-light);color:var(--blue)">read-only look</span></div>
+            <div class="accordion-chevron">&#9660;</div>
+          </div>
+          <div class="accordion-body" style="padding:0 14px 14px">
+            <p>Temporarily shows your files as they were at a specific commit. Useful for reading old code or copying a deleted function. Nothing is changed permanently.</p>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># View the code as it was at commit b3c72d1</span>
+<span class="cmd">git checkout</span> b3c72d1
+<span class="c"># "Detached HEAD" state &#8212; normal, nothing is broken
+# Read the files, run the code, then return to the present:</span>
+<span class="cmd">git checkout</span> main</div>
+            <div class="tip tip-info">"Detached HEAD" just means you are viewing history directly. Run <code>git checkout main</code> any time to return to your normal working state.</div>
+          </div>
+        </div>
+
+        <hr class="divider">
+        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;font-size:13px;line-height:2.1;margin-top:4px">
+          <strong>Which option to choose?</strong><br>
+          <strong>Code is broken and already pushed to GitHub</strong> &nbsp;&#8594;&nbsp; <code>git revert &lt;hash&gt;</code> &#8212; always safest<br>
+          <strong>Not pushed yet &#8212; redo last commits</strong> &nbsp;&#8594;&nbsp; <code>git reset --soft</code> or <code>--mixed</code><br>
+          <strong>Not pushed yet &#8212; discard everything</strong> &nbsp;&#8594;&nbsp; <code>git reset --hard</code><br>
+          <strong>Just want to read old code</strong> &nbsp;&#8594;&nbsp; <code>git checkout &lt;hash&gt;</code>
+        </div>
+      </div>
+      </div>
+    </div>
+
+
+    <div class="section-label">Common Windows issue &#8212; Thumbs.db &amp; desktop.ini files</div>
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:#FEF0E8;color:var(--orange)">&#63;</div>
+        <div class="accordion-title">Already committed Thumbs.db or desktop.ini? Remove them from tracking</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>If you forgot to create a <code>.gitignore</code> before your first commit and <code>.DS_Store</code> is now in your history, adding it to <code>.gitignore</code> is not enough &#8212; Git keeps tracking it because it is already committed. Remove it with:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Remove from Git tracking only &#8212; file stays on your disk</span>
+<span class="cmd">git rm</span> <span class="fl">--cached</span> Thumbs.db
+<span class="cmd">git rm</span> <span class="fl">--cached</span> desktop.ini
+<span class="cmd">git add</span> .gitignore
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Remove Windows clutter and add .gitignore"</span></div>
+        <div class="tip tip-success">The <code>--cached</code> flag tells Git to stop tracking the file without deleting it from your Windows PC.</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="section-label">Command reference</div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git status</span></div>
+        <p>Shows what has changed since the last commit — untracked files, staged files, and modified files.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git status</span>
+<span class="c"># Short version</span>
+<span class="cmd">git status</span> <span class="fl">-s</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git add</span></div>
+        <p>Moves files from your working directory into the staging area.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Stage one specific file</span>
+<span class="cmd">git add</span> index.html
+
+<span class="c"># Stage all changed files</span>
+<span class="cmd">git add</span> <span class="fl">.</span>
+
+<span class="c"># Stage parts of a file interactively</span>
+<span class="cmd">git add</span> <span class="fl">-p</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git commit</span></div>
+        <p>Saves a permanent snapshot of everything in the staging area.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Commit with a message</span>
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add homepage layout"</span>
+
+<span class="c"># Stage + commit in one step</span>
+<span class="cmd">git commit</span> <span class="fl">-am</span> <span class="str">"Fix navigation bug"</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git log</span></div>
+        <p>Browse the commit history. Every commit has a unique hash ID.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Full history</span>
+<span class="cmd">git log</span>
+
+<span class="c"># Compact one-line view</span>
+<span class="cmd">git log</span> <span class="fl">--oneline</span>
+
+<span class="c"># Visual branch graph</span>
+<span class="cmd">git log</span> <span class="fl">--oneline --graph --all</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git diff</span></div>
+        <p>Shows exactly what changed — line by line — before staging.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Unstaged changes</span>
+<span class="cmd">git diff</span>
+
+<span class="c"># Staged changes (ready to commit)</span>
+<span class="cmd">git diff</span> <span class="fl">--staged</span>
+
+<span class="c"># Compare two commits</span>
+<span class="cmd">git diff</span> abc1234 def5678</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git restore</span></div>
+        <p>Undo changes in the working directory or staging area. Does not touch commit history.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Discard changes to a file (before staging)</span>
+<span class="cmd">git restore</span> calculator.py
+
+<span class="c"># Unstage a file (keep changes in the file)</span>
+<span class="cmd">git restore</span> <span class="fl">--staged</span> calculator.py
+
+<span class="c"># Discard all changes in working directory</span>
+<span class="cmd">git restore</span> <span class="fl">.</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git revert</span> <span style="font-size:10px;color:var(--green);font-weight:500;margin-left:4px">&#10003; safest undo</span></div>
+        <p>Creates a new commit that undoes a specific commit. History is never rewritten. Safe to use after pushing to GitHub or on shared branches.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Revert the most recent commit</span>
+<span class="cmd">git revert</span> HEAD <span class="fl">--no-edit</span>
+
+<span class="c"># Revert a specific commit by its hash</span>
+<span class="cmd">git revert</span> d7f3a19 <span class="fl">--no-edit</span>
+<span class="c"># A new "Revert" commit is added on top &#8212; broken commit stays in history</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-warn">git reset</span> <span style="font-size:10px;color:var(--red);font-weight:500;margin-left:4px">&#9888; local only</span></div>
+        <p>Moves the branch pointer back to a specific commit, removing later commits from history. Only use on work <strong>not yet pushed</strong> to GitHub.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Keep changes staged</span>
+<span class="cmd">git reset</span> <span class="fl">--soft</span> b3c72d1
+
+<span class="c"># Keep changes unstaged (default)</span>
+<span class="cmd">git reset</span> b3c72d1
+
+<span class="c"># Permanently delete all changes &#8212; cannot be undone</span>
+<span class="cmd">git reset</span> <span class="fl">--hard</span> b3c72d1</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- GIT BRANCHING -->
+  <div class="page" id="p-git-branch">
+    <div class="page-title">Branching &amp; Merging</div>
+    <div class="page-sub">Continuing with the Python calculator project. We add new functions on separate branches, merge them back, and deliberately trigger a conflict to practice resolving it.</div>
+
+    <div class="tip tip-info" style="margin-bottom:20px">
+      <strong>Where we left off:</strong> The <code>git-demo</code> project has 4 commits on <code>main</code>. Run this to confirm before starting:
+      <div class="code-block" style="margin-top:8px"><span class="cmd">git log</span> <span class="fl">--oneline</span>
+<span class="c"># e4a91f2  Update main to show division result
+# b3c72d1  Add divide function to calculator
+# 9e2d410  Add calculator and main modules
+# 4f1a803  Add .gitignore to ignore .DS_Store</span></div>
+    </div>
+
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--orange-light);color:var(--orange)">B1</div>
+        <div class="accordion-title">Create a branch and add a power function</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>Instead of adding <code>power()</code> directly to <code>main</code>, we create a branch. This keeps <code>main</code> stable while we develop.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># See all branches (* marks current)</span>
+<span class="cmd">git branch</span>
+<span class="c"># * main</span>
+
+<span class="c"># Create and switch in one command</span>
+<span class="cmd">git checkout</span> <span class="fl">-b</span> feature/power-function
+
+<span class="cmd">git branch</span>
+<span class="c">#   main
+# * feature/power-function  &#8592; we are here now</span></div>
+        <div class="tip">Name branches descriptively: <code>feature/what-it-adds</code> or <code>fix/what-it-fixes</code>. Anyone reading the branch list instantly knows its purpose.</div>
+        <p style="margin-top:12px">Add <code>power()</code> to the bottom of <code>calculator.py</code>:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Add to the bottom of calculator.py</span>
+
+<span class="kw">def</span> <span class="cmd">power</span>(a, b):
+    <span class="str">"""Return a raised to the power of b."""</span>
+    <span class="kw">return</span> a ** b</div>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Commit on the branch</span>
+<span class="cmd">git add</span> calculator.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add power function to calculator"</span>
+
+<span class="c"># Update main.py: add power to the import line and add this print:</span>
+<span class="c"># print("Power:          2 ^ 8 =", power(2, 8))</span>
+<span class="cmd">git add</span> main.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Update main to show power result"</span></div>
+        <p style="margin-top:12px">Now <strong>prove the isolation</strong> to students by switching branches and checking the file:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git checkout</span> main
+<span class="cmd">cat</span> calculator.py
+<span class="c"># power() is NOT here &#8212; main is untouched</span>
+
+<span class="cmd">git checkout</span> feature/power-function
+<span class="cmd">cat</span> calculator.py
+<span class="c"># power() is back &#8212; it lives only on this branch</span></div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--orange-light);color:var(--orange)">B2</div>
+        <div class="accordion-title">Visualise the branch graph</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>Before merging, show students the two lines of history diverging side by side:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git log</span> <span class="fl">--oneline --graph --all</span>
+<span class="c"># * b91c3f4  (HEAD -> feature/power-function) Update main to show power result
+# * 7d2e8a1  Add power function to calculator
+# * e4a91f2  (main) Update main to show division result
+# * b3c72d1  Add divide function to calculator
+# * 9e2d410  Add calculator and main modules
+# * 4f1a803  Add .gitignore to ignore .DS_Store</span></div>
+        <div class="tip tip-success"><code>--graph</code> draws the branch lines. <code>--all</code> shows every branch at once, not just the current one. This command is the single best way to understand any repo&#8217;s history at a glance.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--orange-light);color:var(--orange)">B3</div>
+        <div class="accordion-title">Merge the branch back into main</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>The feature is ready. Merge it into <code>main</code> so <code>power()</code> becomes part of the stable codebase:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Switch to the branch you are merging INTO</span>
+<span class="cmd">git checkout</span> main
+
+<span class="c"># Merge the feature branch in</span>
+<span class="cmd">git merge</span> feature/power-function
+<span class="c"># Fast-forward: calculator.py | 4 ++++  main.py | 2 ++-</span>
+
+<span class="c"># Verify power() is now on main</span>
+<span class="cmd">cat</span> calculator.py
+
+<span class="c"># Delete the branch &#8212; it has served its purpose</span>
+<span class="cmd">git branch</span> <span class="fl">-d</span> feature/power-function
+
+<span class="c"># Read the final linear history</span>
+<span class="cmd">git log</span> <span class="fl">--oneline</span></div>
+        <div class="tip tip-info"><strong>Fast-forward merge:</strong> because <code>main</code> had no new commits while the branch existed, Git simply moved the <code>main</code> pointer forward. No merge commit is created &#8212; the history stays perfectly linear.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--red-light);color:var(--red)">&#9888;</div>
+        <div class="accordion-title">Trigger and resolve a merge conflict &#8212; live demo</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>We now <strong>deliberately</strong> create a conflict so students see exactly what Git reports and how to fix it. Both <code>main</code> and a new branch will edit the <strong>same line</strong> of <code>calculator.py</code>.</p>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:8px">Step 1 &#8212; Add a safety check to divide() on main</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># On main, edit the divide function in calculator.py.
+# Change:   return a / b
+# To:</span>
+<span class="kw">def</span> <span class="cmd">divide</span>(a, b):
+    <span class="str">"""Return the result of a divided by b."""</span>
+    <span class="kw">if</span> b == 0: <span class="kw">return</span> <span class="str">"Error: cannot divide by zero"</span>
+    <span class="kw">return</span> a / b
+
+<span class="cmd">git add</span> calculator.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add zero-division guard in main"</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Step 2 &#8212; Edit the same line differently on a new branch</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Go back one commit to branch from BEFORE the guard was added</span>
+<span class="cmd">git checkout</span> <span class="fl">-b</span> fix/divide-safety HEAD~1
+
+<span class="c"># Edit the same divide function &#8212; but use raise instead of return:
+# Change:   return a / b
+# To:</span>
+<span class="kw">def</span> <span class="cmd">divide</span>(a, b):
+    <span class="str">"""Return the result of a divided by b."""</span>
+    <span class="kw">if</span> b == 0: <span class="kw">raise</span> ValueError(<span class="str">"Divisor cannot be zero"</span>)
+    <span class="kw">return</span> a / b
+
+<span class="cmd">git add</span> calculator.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Raise ValueError for zero division on branch"</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Step 3 &#8212; Merge and watch the conflict appear</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git checkout</span> main
+<span class="cmd">git merge</span> fix/divide-safety
+<span class="c"># CONFLICT (content): Merge conflict in calculator.py
+# Automatic merge failed; fix conflicts and then commit the result.</span>
+
+<span class="cmd">git status</span>
+<span class="c"># both modified: calculator.py  &#8592; the conflicted file</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Step 4 &#8212; Open calculator.py and read the conflict markers</p>
+        <div class="code-block"><span class="c"># Git has rewritten the function like this:</span>
+
+<span class="kw">def</span> <span class="cmd">divide</span>(a, b):
+    <span class="str">"""Return the result of a divided by b."""</span>
+<span class="kw">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>                          <span class="c">&#8592; your current branch (main)</span>
+    <span class="kw">if</span> b == 0: <span class="kw">return</span> <span class="str">"Error: cannot divide by zero"</span>
+<span class="kw">=======</span>
+    <span class="kw">if</span> b == 0: <span class="kw">raise</span> ValueError(<span class="str">"Divisor cannot be zero"</span>)
+<span class="kw">&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span> fix/divide-safety              <span class="c">&#8592; incoming branch</span>
+    <span class="kw">return</span> a / b</div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Step 5 &#8212; Resolve: delete the markers, keep the best version</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Edit calculator.py: remove ALL three marker lines and keep one version.
+# Final resolved function:</span>
+
+<span class="kw">def</span> <span class="cmd">divide</span>(a, b):
+    <span class="str">"""Return the result of a divided by b."""</span>
+    <span class="kw">if</span> b == 0: <span class="kw">raise</span> ValueError(<span class="str">"Divisor cannot be zero"</span>)
+    <span class="kw">return</span> a / b
+
+<span class="c"># Stage the resolved file and complete the merge</span>
+<span class="cmd">git add</span> calculator.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Resolve conflict: use ValueError for zero division"</span>
+<span class="cmd">git branch</span> <span class="fl">-d</span> fix/divide-safety
+
+<span class="c"># See the merge commit in history</span>
+<span class="cmd">git log</span> <span class="fl">--oneline --graph</span></div>
+        <div class="tip tip-success">VS Code shows <strong>Accept Current Change</strong>, <strong>Accept Incoming Change</strong>, and <strong>Accept Both Changes</strong> buttons directly above the conflict markers &#8212; much easier than editing the markers by hand in class.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--orange-light);color:var(--orange)">B4</div>
+        <div class="accordion-title">Stash &#8212; pause unfinished work to switch branches</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>Scenario: you started adding a <code>modulo()</code> function but a classmate asks you to check something on <code>main</code>. You are not ready to commit. Stash saves your unfinished work and cleans the working directory.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Start adding modulo to calculator.py (do NOT commit yet):</span>
+<span class="c"># def modulo(a, b):
+#     return a % b</span>
+
+<span class="cmd">git status</span>
+<span class="c"># modified: calculator.py  &#8592; work in progress, not staged</span>
+
+<span class="c"># Stash it &#8212; working directory is now clean</span>
+<span class="cmd">git stash</span>
+<span class="cmd">git status</span>
+<span class="c"># nothing to commit, working tree clean</span>
+
+<span class="c"># Switch, do your work, come back...</span>
+<span class="cmd">git checkout</span> main
+<span class="c"># ...do whatever is needed...</span>
+<span class="cmd">git checkout</span> <span class="fl">-</span>   <span class="c"># shortcut: switch back to previous branch</span>
+
+<span class="c"># Restore your stashed work</span>
+<span class="cmd">git stash pop</span>
+<span class="c"># modulo() is back in calculator.py exactly as you left it</span>
+
+<span class="c"># Now finish and commit</span>
+<span class="cmd">git add</span> calculator.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add modulo function to calculator"</span></div>
+        <div class="tip">Think of <code>git stash</code> as a temporary clipboard for unfinished code. <code>git stash pop</code> pastes it back and removes it from the stash. <code>git stash list</code> shows everything currently saved.</div>
+      </div>
+    </div>
+
+    <div class="tip tip-success" style="margin-top:6px">
+      <strong>End of branching demo.</strong> The calculator now has: <code>add</code>, <code>subtract</code>, <code>multiply</code>, <code>divide</code> (with error handling), <code>power</code>, and <code>modulo</code>. Every function arrived through a branch and a merge &#8212; the same workflow used in every professional software team.
+    </div>
+  </div>
+
+  <!-- GITHUB SETUP -->
+  <div class="page" id="p-gh-setup">
+    <div class="page-title">GitHub Setup</div>
+    <div class="page-sub">Create your account, establish a secure connection, and link your local repository to GitHub.</div>
+
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--purple-light);color:var(--purple)">1</div>
+        <div class="accordion-title">Create a GitHub account</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>Go to <code>github.com</code> and sign up. Use your university email &#8212; it qualifies you for the free GitHub Student Developer Pack.</p>
+        <div class="tip tip-info">After signing up, visit <code>education.github.com/students</code> and apply with your student email. You&#8217;ll get free private repositories, GitHub Copilot, and many other developer tools.</div>
+        <p>Complete your profile: add your full name, a photo, and your university. This makes you visible to teammates and future employers.</p>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--purple-light);color:var(--purple)">2</div>
+        <div class="accordion-title">Set up SSH key authentication</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+
+        <p><strong>What is SSH and why do we need it?</strong><br>
+        Every time you run <code>git push</code> or <code>git pull</code>, your computer needs to prove to GitHub that it is authorised to access that repository. Without SSH you would have to type your GitHub username and password every single time. SSH solves this by using a pair of cryptographic keys instead of a password &#8212; your machine proves its identity automatically and silently.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0">
+          <div style="background:var(--orange-light);border-radius:8px;padding:12px;font-size:13px">
+            <div style="font-weight:500;color:var(--orange);margin-bottom:4px">&#128274; Private key</div>
+            <div>Stays on your Windows PC only. Never shared, never copied anywhere. Think of it as your physical house key &#8212; only you hold it.</div>
+          </div>
+          <div style="background:var(--blue-light);border-radius:8px;padding:12px;font-size:13px">
+            <div style="font-weight:500;color:var(--blue);margin-bottom:4px">&#128275; Public key</div>
+            <div>Goes to GitHub. Think of it as the lock on the door &#8212; anyone can see it, but only your private key can open it.</div>
+          </div>
+        </div>
+
+        <p>When you push, your Windows PC uses the private key to sign a message. GitHub checks it against the public key it has on file. If they match &#8212; access granted, no password needed.</p>
+
+        <hr class="divider">
+
+        <p style="font-size:13px;font-weight:500;color:var(--text)">Sub-step 1 &#8212; Generate the key pair</p>
+        <p>This creates two files inside a hidden folder called <code>~/.ssh/</code> on your Windows PC:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">ssh-keygen</span> <span class="fl">-t ed25519 -C</span> <span class="str">"you@example.com"</span></div>
+
+        <p>Breaking down the flags:</p>
+        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;margin:8px 0;font-size:12.5px;line-height:2">
+          <code style="color:var(--blue)">-t ed25519</code> &nbsp;&#8212;&nbsp; the encryption algorithm. Ed25519 is modern, fast, and more secure than the older RSA algorithm.<br>
+          <code style="color:var(--blue)">-C "you@example.com"</code> &nbsp;&#8212;&nbsp; a comment label attached to the key so you can identify it later. Use your GitHub email.
+        </div>
+
+        <p>After you press Enter you will see three prompts:</p>
+        <div class="code-block"><span class="c">Enter file in which to save the key (/Users/waleed/.ssh/id_ed25519):</span>
+<span class="c">&#8594; Just press Enter to accept the default path. This saves the key as id_ed25519 inside ~/.ssh/</span>
+
+<span class="c">Enter passphrase (empty for no passphrase):</span>
+<span class="c">&#8594; Optional. If you add one, you type it once per session when the agent loads the key.
+   For a classroom demo, press Enter to skip (no passphrase) so it runs without interruption.</span>
+
+<span class="c">Enter same passphrase again:</span>
+<span class="c">&#8594; Press Enter again to confirm.</span></div>
+
+        <p>After generating, verify the two files were created:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">ls</span> <span class="fl">-la</span> ~/.ssh/
+<span class="c"># You should see:
+#   id_ed25519      &#8592; your PRIVATE key &#8212; never share this
+#   id_ed25519.pub  &#8592; your PUBLIC key  &#8212; this goes to GitHub</span></div>
+
+        <hr class="divider">
+
+        <p style="font-size:13px;font-weight:500;color:var(--text)">Sub-step 2 &#8212; Start the SSH agent and load your key</p>
+        <p>The SSH agent is a small background program that holds your private key in memory for the current session. Without it, your Windows PC would not know to use the key when connecting to GitHub.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Start the SSH agent in the background</span>
+<span class="cmd">eval</span> <span class="str">"$(ssh-agent -s)"</span>
+<span class="c"># Expected output: Agent pid 12345  (the number will differ on your machine)</span>
+
+<span class="c"># Load your private key into the agent</span>
+<span class="cmd">ssh-add</span> ~/.ssh/id_ed25519
+<span class="c"># Expected output: Identity added: /Users/waleed/.ssh/id_ed25519</span></div>
+
+        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;margin:8px 0;font-size:13px;line-height:1.7">
+          <div style="font-weight:500;margin-bottom:4px">What these two commands do:</div>
+          <code style="color:var(--orange)">eval "$(ssh-agent -s)"</code> &nbsp;&#8212;&nbsp; starts the agent process and sets an environment variable so your terminal knows where to find it.<br><br>
+          <code style="color:var(--orange)">ssh-add ~/.ssh/id_ed25519</code> &nbsp;&#8212;&nbsp; tells the agent "use this private key". From now on, whenever your Windows PC needs to authenticate to GitHub, the agent hands over the key automatically.
+        </div>
+
+        <div class="tip tip-info"><strong>Windows shortcut:</strong> On Windows you can make the key load automatically every time you open a new terminal by adding it to your SSH config file. Run this once:
+          <div class="code-block" style="margin-top:8px"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Create or open the SSH config file in Notepad</span>
+<span class="cmd">touch</span> ~/.ssh/config
+<span class="cmd">notepad</span> ~/.ssh/config
+
+<span class="c"># Add these lines to the file and save:</span>
+Host github.com
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_ed25519</div>
+          After this, <code>ssh-add</code> runs automatically on every new terminal session &#8212; you never need to run it manually again.
+        </div>
+
+        <hr class="divider">
+
+        <p style="font-size:13px;font-weight:500;color:var(--text)">Sub-step 3 &#8212; Copy your public key and add it to GitHub</p>
+        <p>Print the public key to your terminal, then copy every character of the output:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">cat</span> ~/.ssh/id_ed25519.pub
+<span class="c"># Output looks like this (one very long line):
+# ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA...lots of characters... you@example.com</span>
+
+<span class="c"># Windows (Git Bash) shortcut: copy it directly to your clipboard</span>
+<span class="cmd">cat</span> ~/.ssh/id_ed25519.pub | <span class="cmd">clip</span>
+<span class="c"># Nothing prints &#8212; the key is now in your clipboard ready to paste</span></div>
+
+        <p>Now add it to GitHub:</p>
+        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;margin:8px 0;font-size:13px;line-height:2">
+          1. Go to <code>github.com</code> &#8594; click your profile picture (top right) &#8594; <strong>Settings</strong><br>
+          2. In the left sidebar click <strong>SSH and GPG keys</strong><br>
+          3. Click the green <strong>New SSH key</strong> button<br>
+          4. <strong>Title:</strong> give it a name you will recognise, e.g. <code>Windows PC Air 2024</code><br>
+          5. <strong>Key type:</strong> leave as <em>Authentication Key</em><br>
+          6. <strong>Key:</strong> paste the public key you copied<br>
+          7. Click <strong>Add SSH key</strong> and confirm with your GitHub password
+        </div>
+
+        <hr class="divider">
+
+        <p style="font-size:13px;font-weight:500;color:var(--text)">Sub-step 4 &#8212; Test the connection</p>
+        <p>Verify that your Windows PC can authenticate to GitHub successfully:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">ssh</span> <span class="fl">-T</span> git@github.com</div>
+
+        <p>You may see this warning on first connection &#8212; it is expected:</p>
+        <div class="code-block"><span class="c">The authenticity of host 'github.com (140.82.121.4)' can't be established.
+ED25519 key fingerprint is SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU.
+Are you sure you want to continue connecting (yes/no/[fingerprint])?</span></div>
+        <p>Type <code>yes</code> and press Enter. GitHub&#8217;s fingerprint is saved to your machine so this prompt only appears once. You should then see:</p>
+        <div class="code-block"><span class="c">Hi your-username! You&#8217;ve successfully authenticated, but GitHub does not provide shell access.</span></div>
+
+        <div class="tip tip-success">The phrase "does not provide shell access" is normal &#8212; it just means you cannot log into GitHub&#8217;s servers like a regular terminal. Authentication is working perfectly. You are ready to push and pull.</div>
+
+        <div class="tip tip-warn"><strong>Never share your private key.</strong> The file <code>~/.ssh/id_ed25519</code> (the one WITHOUT <code>.pub</code>) must never leave your machine &#8212; not by email, not in a repo, not in a screenshot. Only <code>id_ed25519.pub</code> goes to GitHub.</div>
+
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--purple-light);color:var(--purple)">3</div>
+        <div class="accordion-title">Create a repository on GitHub</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>On GitHub, click the <strong>+</strong> button &#8594; New repository. Fill in:</p>
+        <div class="card" style="margin:10px 0">
+          <p><strong>Repository name:</strong> use lowercase, hyphens instead of spaces (e.g. <code>git-demo</code>)</p>
+          <p><strong>Description:</strong> one sentence explaining what the project is</p>
+          <p><strong>Visibility:</strong> Public (or Private if your team prefers)</p>
+          <p><strong>Do NOT</strong> initialise with README, .gitignore, or license &#8212; you already have these locally and will push them yourself.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--purple-light);color:var(--purple)">4</div>
+        <div class="accordion-title">Connect your local repo to GitHub</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>After creating the repo on GitHub, link your local <code>git-demo</code> project to it:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Add GitHub as the remote (replace with your actual repo URL)</span>
+<span class="cmd">git remote add</span> origin git@github.com:<span class="str">your-username/git-demo.git</span>
+
+<span class="c"># Verify the remote was added</span>
+<span class="cmd">git remote</span> <span class="fl">-v</span>
+
+<span class="c"># Push main for the first time (-u sets the upstream link)</span>
+<span class="cmd">git push</span> <span class="fl">-u</span> origin main</div>
+        <div class="tip tip-success">After this first push, future pushes only need <code>git push</code> &#8212; no extra flags. The <code>-u</code> flag was a one-time setup that linked your local <code>main</code> to the remote <code>main</code>.</div>
+
+        <div class="section-label" style="margin:16px 0 8px">&#9888; Common remote connection mistakes &#8212; and how to fix them</div>
+
+        <div class="accordion">
+          <div class="accordion-header" onclick="toggleAcc(this)" style="padding:10px 14px">
+            <div style="font-size:13px;font-weight:500;flex:1">Mistake 1 &#8212; Typo in the remote URL (e.g. <code>.gi</code> instead of <code>.git</code>)</div>
+            <div class="accordion-chevron">&#9660;</div>
+          </div>
+          <div class="accordion-body" style="padding:0 14px 14px">
+            <p>The most common mistake when adding a remote is a typo in the URL. If you run <code>git push</code> and see:</p>
+            <div class="code-block"><span class="c">ERROR: Repository not found.
+fatal: Could not read from remote repository.
+Please make sure you have the correct access rights and the repository exists.</span></div>
+            <p>First check what URL Git is using:</p>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git remote</span> <span class="fl">-v</span>
+<span class="c"># origin  git@github.com:waleedju88/git-demo.gi  (fetch)  &#8592; typo: .gi not .git
+# origin  git@github.com:waleedju88/git-demo.gi  (push)</span></div>
+            <p>If the URL is wrong, remove the remote and add it again with the correct URL:</p>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Step 1: remove the wrong remote</span>
+<span class="cmd">git remote remove</span> origin
+
+<span class="c"># Step 2: add it again with the correct URL</span>
+<span class="cmd">git remote add</span> origin git@github.com:<span class="str">your-username/git-demo.git</span>
+
+<span class="c"># Step 3: confirm it looks right</span>
+<span class="cmd">git remote</span> <span class="fl">-v</span>
+<span class="c"># origin  git@github.com:your-username/git-demo.git (fetch) &#8592; correct
+# origin  git@github.com:your-username/git-demo.git (push)</span></div>
+            <div class="tip tip-success">Always copy the URL directly from GitHub &#8212; go to your repo page, click the green <strong>Code</strong> button, select <strong>SSH</strong>, and copy the URL. Never type it by hand.</div>
+          </div>
+        </div>
+
+        <div class="accordion" style="margin-top:8px">
+          <div class="accordion-header" onclick="toggleAcc(this)" style="padding:10px 14px">
+            <div style="font-size:13px;font-weight:500;flex:1">Mistake 2 &#8212; Remote already exists error</div>
+            <div class="accordion-chevron">&#9660;</div>
+          </div>
+          <div class="accordion-body" style="padding:0 14px 14px">
+            <p>If you run <code>git remote add origin ...</code> a second time on the same repo you will see:</p>
+            <div class="code-block"><span class="c">error: remote origin already exists.</span></div>
+            <p>This means a remote called <code>origin</code> is already registered (possibly with a wrong URL). Fix it:</p>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Check what URL is currently registered</span>
+<span class="cmd">git remote</span> <span class="fl">-v</span>
+
+<span class="c"># Remove the existing remote and add the correct one</span>
+<span class="cmd">git remote remove</span> origin
+<span class="cmd">git remote add</span> origin git@github.com:<span class="str">your-username/git-demo.git</span>
+<span class="cmd">git remote</span> <span class="fl">-v</span>   <span class="c"># confirm it is correct now</span></div>
+          </div>
+        </div>
+
+        <div class="accordion" style="margin-top:8px">
+          <div class="accordion-header" onclick="toggleAcc(this)" style="padding:10px 14px">
+            <div style="font-size:13px;font-weight:500;flex:1">Mistake 3 &#8212; Repository not found (repo does not exist on GitHub yet)</div>
+            <div class="accordion-chevron">&#9660;</div>
+          </div>
+          <div class="accordion-body" style="padding:0 14px 14px">
+            <p>The URL is correct and SSH works, but the repo was never created on GitHub. Confirm SSH is working first:</p>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">ssh</span> <span class="fl">-T</span> git@github.com
+<span class="c"># Hi your-username! You've successfully authenticated.  &#8592; SSH is fine
+# If this line appears, the problem is NOT your SSH key &#8212;
+# the repo simply does not exist on GitHub yet.</span></div>
+            <p>Go to GitHub and create the repository:</p>
+            <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;line-height:2;margin:8px 0">
+              1. Go to <code>github.com</code> &#8594; click <strong>+</strong> &#8594; <strong>New repository</strong><br>
+              2. Name it exactly as it appears in your remote URL (e.g. <code>git-demo</code>)<br>
+              3. <strong>Do NOT</strong> tick any initialisation options (no README, no .gitignore)<br>
+              4. Click <strong>Create repository</strong><br>
+              5. Come back to the terminal and push:
+            </div>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git push</span> <span class="fl">-u</span> origin main</div>
+            <div class="tip tip-warn">The repo name in the URL must match the repo name on GitHub <strong>exactly</strong> &#8212; including capitalisation. <code>Git-Demo</code> and <code>git-demo</code> are two different repositories.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GITHUB OPERATIONS -->
+  <div class="page" id="p-gh-ops">
+    <div class="page-title">GitHub Collaboration Tools</div>
+    <div class="page-sub">Still using the Python calculator. We now push it to GitHub and practice every collaboration tool on the same project students have been building since Setup.</div>
+
+    <div class="tip tip-info" style="margin-bottom:16px">
+      <strong>Where we left off:</strong> The <code>git-demo</code> calculator is already connected to GitHub (done in GitHub Setup step 4). It has <code>add</code>, <code>subtract</code>, <code>multiply</code>, <code>divide</code>, <code>power</code>, and <code>modulo</code> on <code>main</code>. Now a second student joins and we collaborate.
+    </div>
+
+    <div class="section-label" style="margin-bottom:10px">&#128203; Quick reference &#8212; not sequential steps</div>
+    <div class="tip tip-info" style="margin-bottom:12px">These two cards are a <strong>reference summary</strong>, not instructions to follow in order. The hands-on steps start with the Pull Requests accordion below. <code>git pull</code> is introduced here for the first time &#8212; read the explanation in the card before the live demo.</div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><span class="badge badge-gh">git push</span></div>
+        <p>Upload your committed local changes to GitHub so they are stored in the cloud and visible to teammates.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Push main after local changes are committed</span>
+<span class="cmd">git push</span>
+
+<span class="c"># Push a new feature branch for the first time</span>
+<span class="cmd">git push</span> <span class="fl">-u</span> origin feature/square-root
+
+<span class="c"># All subsequent pushes on that branch</span>
+<span class="cmd">git push</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-gh">git pull</span> <span style="font-size:11px;color:var(--orange);font-weight:500;margin-left:4px">&#9733; new command</span></div>
+        <p><strong>What it does:</strong> <code>git pull</code> is two commands in one &#8212; it runs <code>git fetch</code> (downloads new commits from GitHub) followed by <code>git merge</code> (merges them into your current branch). You use it whenever a teammate has pushed changes and you need to bring your local copy up to date.</p>
+        <p style="margin-top:8px"><strong>When to use it:</strong> always run <code>git pull</code> on <code>main</code> before creating a new branch, so your branch starts from the latest version of the codebase.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Scenario: teammate pushed a new function to main.
+# You need to get their changes before you start your own work.</span>
+<span class="cmd">git checkout</span> main
+<span class="cmd">git pull</span>
+<span class="c"># Your local main now matches GitHub exactly</span>
+
+<span class="c"># Want to see what changed before merging? Use fetch first:</span>
+<span class="cmd">git fetch</span>
+<span class="cmd">git log</span> <span class="fl">--oneline</span> origin/main
+<span class="c"># Read the incoming commits, then merge manually:</span>
+<span class="cmd">git merge</span> origin/main</div>
+        <div class="tip tip-info" style="margin-top:8px"><strong>git pull = git fetch + git merge.</strong> If you want to inspect what is coming before it lands in your branch, use <code>git fetch</code> first, read the log, then <code>git merge</code>. If you trust the team, <code>git pull</code> does both in one step.</div>
+      </div>
+    </div>
+
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--purple-light);color:var(--purple)">&#128101;</div>
+        <div class="accordion-title">Invite teammates as Collaborators &#8212; do this first</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>Before Student B can clone the repo, push branches, or be assigned as a reviewer, Student A (the repo owner) must invite them as a <strong>Collaborator</strong>. Without this, Student B gets a 404 error when they try to clone a private repo or a permission error when they push.</p>
+
+        <div class="section-label" style="margin:12px 0 8px">Student A (repo owner) &#8212; invite Student B</div>
+
+        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;font-size:13px;line-height:2.1;margin-bottom:12px">
+          1. Go to your repo on GitHub &nbsp;&#8594;&nbsp; <strong>Settings</strong> tab (top menu)<br>
+          2. In the left sidebar click <strong>Collaborators</strong> (under Access)<br>
+          3. GitHub may ask you to confirm your password &#8212; enter it<br>
+          4. Click the green <strong>Add people</strong> button<br>
+          5. Search by Student B&#8217;s <strong>GitHub username or email</strong> and select them<br>
+          6. Click <strong>Add &lt;username&gt; to this repository</strong>
+        </div>
+
+        <div class="tip tip-info">GitHub sends Student B an <strong>email invitation</strong>. They must click <strong>Accept invitation</strong> in the email (or go to <code>github.com/notifications</code>) before they get access. The invitation expires after 7 days.</div>
+
+        <div class="section-label" style="margin:14px 0 8px">Student B &#8212; accept and clone</div>
+
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># After accepting the invitation, Student B clones the repo</span>
+<span class="cmd">git clone</span> git@github.com:<span class="str">student-a-username/git-demo.git</span>
+<span class="cmd">cd</span> git-demo
+
+<span class="c"># Confirm they can see the full history</span>
+<span class="cmd">git log</span> <span class="fl">--oneline</span>
+<span class="c"># Student B now sees all of Student A's commits</span>
+
+<span class="c"># Confirm Student B can push (this verifies access is set up correctly)</span>
+<span class="cmd">git remote</span> <span class="fl">-v</span>
+<span class="c"># origin  git@github.com:student-a-username/git-demo.git (fetch)
+# origin  git@github.com:student-a-username/git-demo.git (push)</span></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+          <div style="background:var(--green-light);border-radius:8px;padding:12px;font-size:12px">
+            <div style="font-weight:500;color:var(--green);margin-bottom:4px">&#10003; Collaborator can</div>
+            Clone the repo, push branches, open PRs, be assigned as reviewer, merge PRs (if branch protection allows)
+          </div>
+          <div style="background:var(--red-light);border-radius:8px;padding:12px;font-size:12px">
+            <div style="font-weight:500;color:var(--red);margin-bottom:4px">&#10007; Collaborator cannot</div>
+            Change repo Settings, delete the repo, manage other collaborators &#8212; only the owner can do these
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--purple-light);color:var(--purple)">PR</div>
+        <div class="accordion-title">Pull Requests &#8212; live demo with the calculator</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>Scenario: Student A wants to add a <code>square_root()</code> function. Instead of pushing to <code>main</code> directly, they open a PR so Student B can review it first.</p>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:4px">Student A &#8212; branch, write, and push</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git checkout</span> <span class="fl">-b</span> feature/square-root
+
+<span class="c"># Add to the TOP of calculator.py:</span>
+<span class="kw">import</span> math
+
+<span class="c"># Add to the BOTTOM of calculator.py:</span>
+<span class="kw">def</span> <span class="cmd">square_root</span>(a):
+    <span class="str">"""Return the square root of a."""</span>
+    <span class="kw">if</span> a &lt; 0: <span class="kw">raise</span> ValueError(<span class="str">"Cannot take root of a negative number"</span>)
+    <span class="kw">return</span> math.sqrt(a)
+
+<span class="c"># Add to main.py (also add square_root to the import line):
+# print("Square root:    sqrt(9) =", square_root(9))</span>
+
+<span class="cmd">git add</span> calculator.py main.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add square_root function (closes #5)"</span>
+<span class="cmd">git push</span> <span class="fl">-u</span> origin feature/square-root</div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">On GitHub &#8212; open the Pull Request</p>
+        <div class="code-block"><span class="c"># GitHub shows: "feature/square-root had recent pushes"
+# Click "Compare &amp; pull request"
+#
+# Fill in:
+#   Title:       Add square_root function
+#   Description: Adds math.sqrt with a guard for negative inputs.
+#                Tested: square_root(9) &#8594; 3.0, square_root(-1) &#8594; raises ValueError.
+#                Closes #5
+#
+# Assign Student B as reviewer &#8594; "Create pull request"</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Student B &#8212; review and request a change</p>
+        <div class="code-block"><span class="c"># In "Files changed" tab, click + next to the import line:
+#   "The import should be at the top of the file, not inside the function."
+# Click "Request changes" &#8594; submit review</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Student A &#8212; fix and push again</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Move import math to line 1 of calculator.py, then:</span>
+<span class="cmd">git add</span> calculator.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Move math import to top of file"</span>
+<span class="cmd">git push</span>
+<span class="c"># The PR updates automatically &#8212; Student B sees the new commit</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Student B &#8212; approve and merge</p>
+        <p>Everything happens on GitHub&#8217;s website &#8212; no terminal commands needed for this part.</p>
+
+        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;font-size:13px;line-height:2.2;margin:10px 0">
+          <strong>Student B opens the PR page on GitHub:</strong><br>
+          1. Go to the repo on GitHub &#8594; click the <strong>Pull requests</strong> tab<br>
+          2. Click the open PR titled <em>"Add square_root function"</em><br>
+          3. Click the <strong>Files changed</strong> tab &#8212; read every line Student A wrote<br>
+          4. When satisfied, click the green <strong>Review changes</strong> button (top right of the diff)<br>
+          5. In the popup, write an optional comment (e.g. <em>"Looks good, import is now at the top"</em>)<br>
+          6. Select <strong>Approve</strong> &#8594; click <strong>Submit review</strong><br>
+          7. Go back to the <strong>Conversation</strong> tab &#8212; a green &#10003; appears showing the PR is approved<br>
+          8. Click the green <strong>Merge pull request</strong> button &#8594; <strong>Confirm merge</strong><br>
+          9. Click <strong>Delete branch</strong> to remove the remote feature branch
+        </div>
+
+        <div class="tip tip-success">Issue #5 closes <strong>automatically</strong> the moment the merge completes &#8212; GitHub reads the "closes #5" keyword in the commit message and closes the linked issue with no extra action needed.</div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Both students &#8212; sync local main</p>
+        <p>After the merge, both Student A and Student B must pull the updated <code>main</code> so their local machines are in sync with GitHub:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git checkout</span> main
+<span class="cmd">git pull</span>
+<span class="cmd">git log</span> <span class="fl">--oneline</span>
+<span class="c"># square_root is now on main for both students</span></div>
+
+        <div class="tip tip-info"><strong>Reviewing a PR &#8212; what the tabs mean:</strong><br>
+        <strong>Conversation</strong> &#8212; the timeline of comments, commits, and reviews on this PR.<br>
+        <strong>Commits</strong> &#8212; every commit pushed to this branch since the PR was opened.<br>
+        <strong>Files changed</strong> &#8212; the full diff: green lines (+) are additions, red lines (-) are deletions. Click <code>+</code> beside any line to leave a comment on that exact line.</div>
+      </div>
+    </div>
+
+
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--purple-light);color:var(--purple)">IS</div>
+        <div class="accordion-title">Issues &#8212; plan and track calculator features</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>A GitHub <strong>Issue</strong> is a tracked task, feature request, or bug report. Before Student A or B writes a single line of code, they create an Issue so every piece of work is planned, assigned, and traceable. The Issue number is then referenced in commits and PRs to link everything together automatically.</p>
+
+        <div class="section-label" style="margin:12px 0 8px">Part 1 &#8212; Create an Issue on GitHub</div>
+        <p>Student A creates all four issues for the next set of calculator features:</p>
+
+        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;font-size:13px;line-height:2.1;margin-bottom:12px">
+          1. Go to the repo on GitHub &#8594; click the <strong>Issues</strong> tab<br>
+          2. Click the green <strong>New issue</strong> button<br>
+          3. Fill in the <strong>Title</strong> &#8212; keep it short and specific (see examples below)<br>
+          4. In the <strong>Leave a comment</strong> box write a description: what the function should do, what inputs it accepts, what it should return, any edge cases<br>
+          5. On the right sidebar &#8594; <strong>Assignees</strong> &#8594; assign the student responsible<br>
+          6. On the right sidebar &#8594; <strong>Labels</strong> &#8594; pick a label like <em>enhancement</em> for new features or <em>bug</em> for fixes<br>
+          7. Click <strong>Submit new issue</strong>
+        </div>
+
+        <p>Repeat for all four planned features:</p>
+        <div class="code-block"><span class="c">Issue #5 &#8212; Title: "Add square_root function"
+          Description: Add math.sqrt(a) with a guard for negative inputs.
+          Assignee: Student A    Label: enhancement
+
+Issue #6 &#8212; Title: "Add absolute_value function"
+          Description: Add abs(a) wrapper for consistency with the module API.
+          Assignee: Student B    Label: enhancement
+
+Issue #7 &#8212; Title: "Add is_even helper function"
+          Description: Return True if a is even, False otherwise.
+          Assignee: Student A    Label: enhancement
+
+Issue #8 &#8212; Title: "Write README with usage examples"
+          Description: Document all functions with input/output examples.
+          Assignee: Student B    Label: documentation</span></div>
+
+        <div style="background:var(--red-light);border:0.5px solid var(--red);border-radius:8px;padding:12px 14px;margin:12px 0;font-size:13px;line-height:1.8">
+          <div style="font-weight:600;color:var(--red);margin-bottom:6px">&#9888; Important &#8212; issue numbers must match exactly</div>
+          GitHub assigns issue numbers <strong>automatically in the order they are created</strong>, starting from #1 in each repo. The numbers #5&#8211;#8 used here assume a fresh repo with no prior issues.<br><br>
+          In your own repo the README issue might be <code>#3</code> or <code>#12</code> depending on what was already created. A commit with <code>fixes #8</code> in a repo where that issue is actually <code>#6</code> will close the <strong>wrong issue</strong> &#8212; or do nothing at all.<br><br>
+          <strong>Always check the actual number on GitHub first:</strong>
+          <div class="code-block" style="margin-top:8px"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Go to: github.com/your-username/git-demo/issues
+# Look at the number next to each issue title
+# Use THAT exact number in your commit message</span>
+
+<span class="c"># Example: if the README issue shows as #11 on GitHub:</span>
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Write README with usage examples (fixes #15)"</span>
+<span class="c"># Use the ACTUAL number GitHub assigned &#8212; NOT necessarily #8</span></div>
+        </div>
+
+        <div class="section-label" style="margin:16px 0 8px">Part 2 &#8212; Handle each Issue step by step</div>
+        <p>Each Issue follows the same full cycle: branch &#8594; code &#8594; commit &#8594; push &#8594; PR &#8594; review &#8594; merge &#8594; sync. Work through them one at a time.</p>
+
+        <hr class="divider">
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:4px">&#128308; Issue #5 &#8212; Add square_root function &nbsp;<span style="font-size:11px;font-weight:400;color:var(--muted)">Assigned: Student A</span></p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Student A &#8212; on their machine</span>
+<span class="cmd">git checkout</span> main
+<span class="cmd">git pull</span>                          <span class="c"># always sync before branching</span>
+<span class="cmd">git checkout</span> <span class="fl">-b</span> feature/square-root
+
+<span class="c"># Add to the TOP of calculator.py:</span>
+<span class="kw">import</span> math
+
+<span class="c"># Add to the BOTTOM of calculator.py:</span>
+<span class="kw">def</span> <span class="cmd">square_root</span>(a):
+    <span class="str">"""Return the square root of a."""</span>
+    <span class="kw">if</span> a &lt; 0: <span class="kw">raise</span> ValueError(<span class="str">"Cannot take root of a negative number"</span>)
+    <span class="kw">return</span> math.sqrt(a)
+
+<span class="c"># Update main.py &#8212; add square_root to the import line and add:</span>
+<span class="c"># print("Square root:    sqrt(9) =", square_root(9))</span>
+
+<span class="cmd">git add</span> calculator.py main.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add square_root function (closes #5)"</span>
+<span class="cmd">git push</span> <span class="fl">-u</span> origin feature/square-root</div>
+        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;line-height:2;margin:8px 0">
+          On GitHub: open PR &#8594; assign Student B as reviewer &#8594; Student B reviews in "Files changed" &#8594; approves &#8594; merges &#8594; Issue #5 closes automatically<br>
+          Both students: <code>git checkout main</code> &amp;&amp; <code>git pull</code>
+        </div>
+
+        <hr class="divider">
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:4px">&#128308; Issue #6 &#8212; Add absolute_value function &nbsp;<span style="font-size:11px;font-weight:400;color:var(--muted)">Assigned: Student B</span></p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Student B &#8212; on their machine</span>
+<span class="cmd">git checkout</span> main
+<span class="cmd">git pull</span>                          <span class="c"># pull the square_root merge first</span>
+<span class="cmd">git checkout</span> <span class="fl">-b</span> feature/absolute-value
+
+<span class="c"># Add to the BOTTOM of calculator.py:</span>
+<span class="kw">def</span> <span class="cmd">absolute_value</span>(a):
+    <span class="str">"""Return the absolute value of a."""</span>
+    <span class="kw">return</span> abs(a)
+
+<span class="c"># Update main.py &#8212; add absolute_value to the import line and add:</span>
+<span class="c"># print("Absolute value: |-5| =", absolute_value(-5))</span>
+
+<span class="cmd">git add</span> calculator.py main.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add absolute_value function (closes #6)"</span>
+<span class="cmd">git push</span> <span class="fl">-u</span> origin feature/absolute-value</div>
+        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;line-height:2;margin:8px 0">
+          On GitHub: open PR &#8594; assign Student A as reviewer &#8594; Student A reviews &#8594; approves &#8594; merges &#8594; Issue #6 closes automatically<br>
+          Both students: <code>git checkout main</code> &amp;&amp; <code>git pull</code>
+        </div>
+
+        <hr class="divider">
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:4px">&#128308; Issue #7 &#8212; Add is_even helper function &nbsp;<span style="font-size:11px;font-weight:400;color:var(--muted)">Assigned: Student A</span></p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Student A &#8212; on their machine</span>
+<span class="cmd">git checkout</span> main
+<span class="cmd">git pull</span>                          <span class="c"># pull the absolute_value merge first</span>
+<span class="cmd">git checkout</span> <span class="fl">-b</span> feature/is-even
+
+<span class="c"># Add to the BOTTOM of calculator.py:</span>
+<span class="kw">def</span> <span class="cmd">is_even</span>(a):
+    <span class="str">"""Return True if a is even, False otherwise."""</span>
+    <span class="kw">return</span> a % 2 == 0
+
+<span class="c"># Update main.py &#8212; add is_even to the import line and add:</span>
+<span class="c"># print("Is even:        4 even?", is_even(4))</span>
+<span class="c"># print("Is even:        7 even?", is_even(7))</span>
+
+<span class="cmd">git add</span> calculator.py main.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add is_even helper (resolves #7)"</span>
+<span class="cmd">git push</span> <span class="fl">-u</span> origin feature/is-even</div>
+        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;line-height:2;margin:8px 0">
+          On GitHub: open PR &#8594; assign Student B as reviewer &#8594; Student B reviews &#8594; approves &#8594; merges &#8594; Issue #7 closes automatically<br>
+          Both students: <code>git checkout main</code> &amp;&amp; <code>git pull</code>
+        </div>
+
+        <hr class="divider">
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:4px">&#128308; Issue #8 &#8212; Write README with usage examples &nbsp;<span style="font-size:11px;font-weight:400;color:var(--muted)">Assigned: Student B</span></p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Student B &#8212; on their machine</span>
+<span class="cmd">git checkout</span> main
+<span class="cmd">git pull</span>                          <span class="c"># pull the is_even merge first</span>
+<span class="cmd">git checkout</span> <span class="fl">-b</span> docs/readme
+
+<span class="c"># Create or update README.md with content like:</span>
+<span class="c"># # git-demo Calculator
+# A Python calculator module built as a Git/GitHub learning project.
+#
+# ## Functions
+# | Function         | Description                        | Example              |
+# |------------------|------------------------------------|----------------------|
+# | add(a, b)        | Returns a + b                      | add(3, 2) -> 5       |
+# | subtract(a, b)   | Returns a - b                      | subtract(5, 3) -> 2  |
+# | multiply(a, b)   | Returns a * b                      | multiply(4, 3) -> 12 |
+# | divide(a, b)     | Returns a / b, raises on b=0       | divide(9, 3) -> 3.0  |
+# | power(a, b)      | Returns a ** b                     | power(2, 8) -> 256   |
+# | modulo(a, b)     | Returns a % b                      | modulo(10, 3) -> 1   |
+# | square_root(a)   | Returns sqrt(a), raises if a&lt;0     | square_root(9) -> 3.0|
+# | absolute_value(a)| Returns abs(a)                     | absolute_value(-5)->5|
+# | is_even(a)       | Returns True if a is even          | is_even(4) -> True   |
+#
+# ## How to run
+# python3 main.py</span>
+
+<span class="cmd">git add</span> README.md
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Write README with usage examples (fixes #8)"</span>
+<span class="cmd">git push</span> <span class="fl">-u</span> origin docs/readme</div>
+        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;line-height:2;margin:8px 0">
+          On GitHub: open PR &#8594; assign Student A as reviewer &#8594; Student A reviews &#8594; approves &#8594; merges &#8594; Issue #8 closes automatically<br>
+          Both students: <code>git checkout main</code> &amp;&amp; <code>git pull</code>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section-label" style="margin:4px 0 8px">Final state &#8212; read the complete project history</div>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Run this together at the end &#8212; show on projector</span>
+<span class="cmd">git log</span> <span class="fl">--oneline --graph --all</span>
+<span class="c"># Every commit, every branch, every merge is visible
+# The full story of Student A and B building the calculator together</span>
+
+<span class="c"># Also check the Issues tab on GitHub:
+# &#8594; Open: 0 issues remaining
+# &#8594; Closed: #5, #6, #7, #8 &#8212; each linked to its PR and commit</span></div>
+
+        <div class="tip tip-success"><strong>What students have practised across all 4 issues:</strong> creating issues with assignees and labels, branching per issue, committing with closing keywords, pushing feature branches, opening PRs, reviewing and approving on GitHub, merging, auto-closing issues, and syncing <code>main</code> after every merge. This is the complete professional GitHub workflow from start to finish.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--purple-light);color:var(--purple)">BP</div>
+        <div class="accordion-title">Branch protection &#8212; guard calculator&#8217;s main branch</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>Enable branch protection so no one can push directly to <code>main</code> and skip the review process. On GitHub: <strong>Settings &#8594; Branches &#8594; Add branch protection rule</strong>:</p>
+        <div class="code-block"><span class="c">Branch name pattern: main
+
+&#10003; Require a pull request before merging
+    &#8594; Required approvals: 1
+&#10003; Require branches to be up to date before merging
+&#10007; Allow force pushes   (keep OFF)
+&#10007; Allow deletions      (keep OFF)</span></div>
+        <p style="margin-top:10px">Demonstrate the protection live &#8212; try pushing directly to <code>main</code>:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git checkout</span> main
+<span class="cmd">echo</span> <span class="str">"# test"</span> &gt;&gt; calculator.py
+<span class="cmd">git add</span> . &amp;&amp; <span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"test direct push"</span>
+<span class="cmd">git push</span>
+<span class="c"># ! [remote rejected] main &#8594; main (protected branch)
+# GitHub blocks it &#8212; this is the expected result</span></div>
+        <div class="tip tip-warn">Undo the test commit before continuing: <code>git reset HEAD~1 --hard</code></div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--purple-light);color:var(--purple)">GI</div>
+        <div class="accordion-title">.gitignore for the Python calculator</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>Python generates bytecode files automatically when you run <code>.py</code> files. Add these to <code>.gitignore</code> so they never get committed:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Add these lines to .gitignore</span>
+
+<span class="c"># Windows clutter</span>
+Thumbs.db
+desktop.ini
+
+<span class="c"># Python bytecode &#8212; created automatically when running .py files</span>
+__pycache__/
+*.pyc
+*.pyo
+
+<span class="c"># Python virtual environment</span>
+venv/
+.env
+
+<span class="c"># Editor files</span>
+.vscode/
+.idea/</div>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Run the calculator to generate __pycache__, then check status</span>
+<span class="cmd">python</span> main.py
+<span class="cmd">git status</span>
+<span class="c"># __pycache__/ should NOT appear &#8212; .gitignore is hiding it</span>
+
+<span class="c"># Commit the updated .gitignore</span>
+<span class="cmd">git add</span> .gitignore
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add Python bytecode rules to .gitignore"</span>
+<span class="cmd">git push</span></div>
+        <div class="tip tip-success">Run <code>python3 main.py</code> live so students see <code>__pycache__/</code> appear on disk, then confirm <code>git status</code> stays clean because <code>.gitignore</code> is working.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM WORKFLOW -->
+  <div class="page" id="p-workflow">
+    <div class="page-title">Team Workflow Reference</div>
+    <div class="page-sub">Three essential references for working in a team: the most common mistakes and how to fix them, a comparison of professional Git workflows, and a checklist to follow during every project.</div>
+
+    <!-- ===================== SECTION 1: COMMON MISTAKES ===================== -->
+    <div class="section-label">Part 1 &#8212; Common mistakes &amp; how to fix them</div>
+    <div class="tip tip-warn" style="margin-bottom:14px">These are the mistakes every student makes at least once. Reading them now means you fix them in seconds instead of losing 30 minutes during a live session.</div>
+
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--red-light);color:var(--red)">M1</div>
+        <div class="accordion-title">Committed directly to main instead of a branch</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p><strong>What happened:</strong> You forgot to create a branch and committed straight to <code>main</code>. Now main has uncommitted work that has not been reviewed.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Check your current branch</span>
+<span class="cmd">git branch</span>
+<span class="c"># * main  &#8592; you are on main, not a feature branch</span>
+
+<span class="c"># See which commits were added directly to main</span>
+<span class="cmd">git log</span> <span class="fl">--oneline</span>
+<span class="c"># abc1234  Add square_root function  &#8592; this should have been on a branch</span>
+
+<span class="c"># Fix: create a branch pointing to your current state</span>
+<span class="cmd">git branch</span> feature/square-root
+
+<span class="c"># Reset main back one commit (un-commit from main, keep changes staged)</span>
+<span class="cmd">git reset</span> HEAD~1
+
+<span class="c"># Now switch to your feature branch &#8212; your work is still there</span>
+<span class="cmd">git checkout</span> feature/square-root
+<span class="cmd">git log</span> <span class="fl">--oneline</span>
+<span class="c"># abc1234  Add square_root function &#8592; commit is now on the correct branch</span></div>
+        <div class="tip tip-success">Prevention: always run <code>git branch</code> before you start coding. If you see <code>* main</code>, run <code>git checkout -b feature/your-task</code> first.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--red-light);color:var(--red)">M2</div>
+        <div class="accordion-title">Forgot to pull before creating a new branch</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p><strong>What happened:</strong> Your teammate merged a PR an hour ago. You branched from an old version of <code>main</code> and now your branch is missing their changes. When you open a PR, GitHub says the branch is out of date.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># You are on your feature branch and your PR is "out of date"
+# Fix: bring your branch up to date with the current main</span>
+<span class="cmd">git checkout</span> main
+<span class="cmd">git pull</span>                   <span class="c"># get the latest main from GitHub</span>
+<span class="cmd">git checkout</span> feature/your-task
+<span class="cmd">git merge</span> main             <span class="c"># bring main's new commits into your branch</span>
+
+<span class="c"># If a conflict appears, resolve it, then:</span>
+<span class="cmd">git add</span> <span class="fl">.</span>
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Merge latest main into feature/your-task"</span>
+<span class="cmd">git push</span>
+<span class="c"># PR on GitHub updates automatically and is now up to date</span></div>
+        <div class="tip tip-success">Prevention: the very first two commands of every work session should always be <code>git checkout main</code> then <code>git pull</code>.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--red-light);color:var(--red)">M3</div>
+        <div class="accordion-title">Accidentally added a file you did not mean to commit</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p><strong>What happened:</strong> You ran <code>git add .</code> and it picked up a <code>.env</code> file, a test output, or a large binary that should not be in the repo.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Case 1: file is staged but NOT committed yet &#8212; just unstage it</span>
+<span class="cmd">git restore</span> <span class="fl">--staged</span> .env
+<span class="cmd">git status</span>
+<span class="c"># .env is back to untracked &#8212; it will NOT be in the next commit</span>
+
+<span class="c"># Case 2: file was already committed &#8212; remove from tracking only</span>
+<span class="cmd">git rm</span> <span class="fl">--cached</span> .env
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Remove .env from tracking"</span>
+
+<span class="c"># Then add it to .gitignore so it never happens again</span>
+<span class="cmd">echo</span> <span class="str">".env"</span> &gt;&gt; .gitignore
+<span class="cmd">git add</span> .gitignore
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add .env to .gitignore"</span></div>
+        <div class="tip tip-warn">If you committed a file containing real passwords or API keys, changing the file is not enough &#8212; the secret is still visible in the history. You must rotate the key immediately (generate a new one in the service that issued it) and treat the old one as compromised.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--red-light);color:var(--red)">M4</div>
+        <div class="accordion-title">Wrote a wrong commit message</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p><strong>What happened:</strong> You just committed with a typo, the wrong issue number, or a vague message like "fix" and you want to correct it <em>before</em> you push.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Fix the most recent commit message (BEFORE pushing)</span>
+<span class="cmd">git commit</span> <span class="fl">--amend -m</span> <span class="str">"Add square_root function (closes #5)"</span>
+
+<span class="c"># Verify the message was updated</span>
+<span class="cmd">git log</span> <span class="fl">--oneline</span></div>
+        <div class="tip tip-warn">Only use <code>--amend</code> on commits that have <strong>not been pushed yet</strong>. Amending a commit that is already on GitHub rewrites history and will cause problems for anyone who pulled it.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--red-light);color:var(--red)">M5</div>
+        <div class="accordion-title">Pushed to the wrong branch</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p><strong>What happened:</strong> You meant to push <code>feature/square-root</code> but accidentally pushed to a different branch, or pushed commits that should not be there.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Check exactly what was pushed and to which branch</span>
+<span class="cmd">git log</span> <span class="fl">--oneline</span> origin/feature/square-root
+
+<span class="c"># If the last commit should not be there, revert it safely
+# (creates a new commit that undoes the bad one &#8212; safe for shared branches)</span>
+<span class="cmd">git revert</span> HEAD
+<span class="cmd">git push</span>
+
+<span class="c"># OR: if the branch has NOT been reviewed by anyone yet,
+# reset and force-push (only safe when you are the only user of that branch)</span>
+<span class="cmd">git reset</span> HEAD~1
+<span class="cmd">git push</span> <span class="fl">--force</span>
+<span class="c"># WARNING: never force-push to main or a shared branch</span></div>
+        <div class="tip tip-warn">Use <code>git revert</code> on any branch that teammates have already pulled. Use <code>git reset + force-push</code> only on your own private feature branches that nobody else has touched.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--red-light);color:var(--red)">M6</div>
+        <div class="accordion-title">Two students edited the same file at the same time</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p><strong>What happened:</strong> Student A and Student B both branched from the same commit and both edited <code>calculator.py</code>. The second PR to merge will have a conflict.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Student B&#8217;s PR shows "This branch has conflicts"
+# Fix on Student B&#8217;s machine:</span>
+<span class="cmd">git checkout</span> main
+<span class="cmd">git pull</span>                        <span class="c"># get Student A&#8217;s merged changes</span>
+<span class="cmd">git checkout</span> feature/absolute-value
+<span class="cmd">git merge</span> main                  <span class="c"># brings the conflict into Student B&#8217;s branch</span>
+
+<span class="c"># Open calculator.py, find the conflict markers:
+# &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+# Student B&#8217;s code
+# =======
+# Student A&#8217;s code
+# &gt;&gt;&gt;&gt;&gt;&gt;&gt; main</span>
+
+<span class="c"># Decide which code to keep (or combine both), remove markers, then:</span>
+<span class="cmd">git add</span> calculator.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Resolve conflict with main in calculator.py"</span>
+<span class="cmd">git push</span>
+<span class="c"># PR on GitHub is now conflict-free and ready to review</span></div>
+        <div class="tip tip-success">Prevention: coordinate with your teammate before starting. If you both need to edit the same file, merge the first PR before the second person starts their branch. Merge PRs in Issue order: #5 first, then #6, and so on.</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ===================== SECTION 2: WORKFLOW COMPARISON ===================== -->
+    <div class="section-label">Part 2 &#8212; Git workflow comparison</div>
+    <p>The workflow you have been practising is called the <strong>Feature Branch Workflow</strong>. It is one of three workflows used in professional teams. Understanding the differences helps you choose the right one for any project.</p>
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">&#127775; Feature Branch Workflow <span class="badge badge-git" style="margin-left:6px">what you used</span></div>
+      <p>Every feature or fix lives on its own branch. All branches merge back into <code>main</code> via a Pull Request. <code>main</code> is always deployable.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div style="background:var(--green-light);border-radius:6px;padding:10px;font-size:12px">
+          <div style="font-weight:500;color:var(--green);margin-bottom:4px">Best for</div>
+          Small teams (2&#8211;8 people), student projects, startups, continuous deployment
+        </div>
+        <div style="background:var(--red-light);border-radius:6px;padding:10px;font-size:12px">
+          <div style="font-weight:500;color:var(--red);margin-bottom:4px">Limitation</div>
+          Can get noisy with many open branches; requires discipline to keep PRs small
+        </div>
+      </div>
+      <div class="code-block" style="margin-top:10px"><span class="c">main
+ ├── feature/square-root    &#8594; PR &#8594; merge &#8594; delete
+ ├── feature/absolute-value &#8594; PR &#8594; merge &#8594; delete
+ └── fix/divide-safety      &#8594; PR &#8594; merge &#8594; delete</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">&#127981; Gitflow Workflow <span class="badge" style="background:var(--blue-light);color:var(--blue);margin-left:6px">enterprise standard</span></div>
+      <p>Uses two permanent branches: <code>main</code> (production-only) and <code>develop</code> (integration). Features branch from <code>develop</code>, get merged back to <code>develop</code>, then batched into a <code>release</code> branch that eventually merges to <code>main</code>.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div style="background:var(--green-light);border-radius:6px;padding:10px;font-size:12px">
+          <div style="font-weight:500;color:var(--green);margin-bottom:4px">Best for</div>
+          Large teams with scheduled release cycles, banking software, enterprise apps, anywhere <code>main</code> must never break
+        </div>
+        <div style="background:var(--red-light);border-radius:6px;padding:10px;font-size:12px">
+          <div style="font-weight:500;color:var(--red);margin-bottom:4px">Limitation</div>
+          More complex, more branches to manage, slower to get features to production
+        </div>
+      </div>
+      <div class="code-block" style="margin-top:10px"><span class="c">main        &#8592; production releases only
+develop     &#8592; integration branch
+ ├── feature/login     &#8594; merge to develop
+ ├── feature/dashboard &#8594; merge to develop
+ └── release/v1.2      &#8594; merge to main + tag v1.2</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">&#127860; Forking Workflow <span class="badge" style="background:var(--purple-light);color:var(--purple);margin-left:6px">open source standard</span></div>
+      <p>Every contributor has their own <strong>fork</strong> (a full copy of the repo under their own account). They commit to their fork and open PRs back to the original repo. No one except the maintainer commits directly to the original.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div style="background:var(--green-light);border-radius:6px;padding:10px;font-size:12px">
+          <div style="font-weight:500;color:var(--green);margin-bottom:4px">Best for</div>
+          Open source projects (GitHub itself, Python, React), any project where contributors do not have write access to the original repo
+        </div>
+        <div style="background:var(--red-light);border-radius:6px;padding:10px;font-size:12px">
+          <div style="font-weight:500;color:var(--red);margin-bottom:4px">Limitation</div>
+          Forks can fall behind the original; contributors must keep their fork synced manually
+        </div>
+      </div>
+      <div class="code-block" style="margin-top:10px"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Fork the original repo on GitHub (click "Fork")
+# Clone YOUR fork</span>
+<span class="cmd">git clone</span> git@github.com:<span class="str">your-username/original-repo.git</span>
+
+<span class="c"># Add the original repo as "upstream" to sync later</span>
+<span class="cmd">git remote add</span> upstream git@github.com:<span class="str">original-owner/original-repo.git</span>
+
+<span class="c"># Keep your fork up to date with the original</span>
+<span class="cmd">git fetch</span> upstream
+<span class="cmd">git merge</span> upstream/main
+
+<span class="c"># Open PR from your fork to the original repo on GitHub</span></div>
+    </div>
+
+    <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:14px;font-size:13px;line-height:2;margin-bottom:6px">
+      <strong>Quick comparison</strong><br>
+      <strong>Feature Branch</strong> &#8212; 1 repo, branches per feature, PRs to <code>main</code> &#8212; best for your coursework and small teams<br>
+      <strong>Gitflow</strong> &#8212; 1 repo, <code>main</code> + <code>develop</code> + feature + release branches &#8212; best for scheduled releases<br>
+      <strong>Forking</strong> &#8212; every contributor has their own repo copy, PRs across forks &#8212; best for open source
+    </div>
+
+    <hr class="divider">
+
+    <!-- ===================== SECTION 3: CHECKLIST ===================== -->
+    <div class="section-label">Part 3 &#8212; Team project checklist</div>
+    <p>Use this checklist every time you start work on a new Issue. Tick each box before moving to the next step.</p>
+
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--green-light);color:var(--green)">&#9745;</div>
+        <div class="accordion-title">Before you write any code</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px" id="checklist-before">
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> The Issue exists on GitHub with a title, description, and it is assigned to you</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> You know the exact Issue number (e.g. #5) — you checked the Issues tab on GitHub</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> You ran <code>git checkout main</code> then <code>git pull</code> to get the latest version</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> You created a new branch with a clear name: <code>git checkout -b feature/your-task</code></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> You confirmed you are on the right branch: <code>git branch</code> shows <code>* feature/your-task</code></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--green-light);color:var(--green)">&#9745;</div>
+        <div class="accordion-title">While you are coding</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> You run <code>git status</code> regularly to see what has changed</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> You commit in small logical chunks — one commit per meaningful change, not one giant commit at the end</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> Each commit message describes what changed, e.g. <code>"Add input validation to square_root"</code></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> Your final commit message includes the closing keyword and issue number: <code>"(closes #5)"</code></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> You have pushed your branch to GitHub at least once as a backup: <code>git push -u origin feature/your-task</code></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> <code>.DS_Store</code>, <code>__pycache__/</code>, <code>.env</code>, and other generated files are NOT showing in <code>git status</code></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--green-light);color:var(--green)">&#9745;</div>
+        <div class="accordion-title">Opening a Pull Request</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> Your branch is up to date with <code>main</code> — no "out of date" warning on GitHub</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> PR title clearly states what the PR does, e.g. <em>"Add square_root function"</em></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> PR description explains what was changed, why, and how it was tested</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> PR description includes <code>Closes #5</code> to link and auto-close the Issue on merge</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> You assigned a teammate as reviewer</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> There are no merge conflicts shown on the PR page</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--green-light);color:var(--green)">&#9745;</div>
+        <div class="accordion-title">Reviewing a teammate&#8217;s Pull Request</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> You opened the <strong>Files changed</strong> tab and read every line of the diff</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> The code does what the Issue asked for</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> No debug prints, commented-out code, or accidental files are included</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> You left at least one comment (even if just "Looks good!") to show you reviewed it</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> You clicked <strong>Review changes &#8594; Approve &#8594; Submit review</strong></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> You clicked <strong>Merge pull request &#8594; Confirm merge &#8594; Delete branch</strong></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--green-light);color:var(--green)">&#9745;</div>
+        <div class="accordion-title">After every merge</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> <strong>Both</strong> students ran <code>git checkout main</code> then <code>git pull</code></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> The merged Issue shows as <strong>Closed</strong> on the GitHub Issues tab</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> The feature branch has been deleted locally: <code>git branch -d feature/your-task</code></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> <code>git log --oneline</code> shows the merge commit at the top of main</label>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer"><input type="checkbox" style="margin-top:3px;flex-shrink:0"> You are ready to start the next Issue from a clean, up-to-date main</label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PROJECT INTRO -->
+  <div class="page" id="p-project-intro">
+    <div class="page-title">Team Project — Task Manager App</div>
+    <div class="page-sub">A 4-student collaborative project applying Git and GitHub in a realistic team environment.</div>
+
+    <div class="tip tip-info" style="margin-bottom:20px">
+      <strong>The project:</strong> Build a web-based <strong>Task Manager</strong> — a to-do list app where users can add tasks, mark them complete, filter by status (All / Active / Done), and persist data across page refreshes using localStorage. Simple enough to build in one session, complex enough to require real teamwork.
+    </div>
+
+    <div class="section-label">What you'll practice</div>
+    <div class="grid-2">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card" style="padding:12px 14px">
+          <div style="font-size:13px;font-weight:500;margin-bottom:2px">🌿 Branching</div>
+          <p style="margin:0;font-size:12px">Each student works on their own branch — no stepping on each other's code.</p>
+        </div>
+        <div class="card" style="padding:12px 14px">
+          <div style="font-size:13px;font-weight:500;margin-bottom:2px">🔀 Pull Requests</div>
+          <p style="margin:0;font-size:12px">Every feature comes in through a PR with at least one teammate's approval.</p>
+        </div>
+        <div class="card" style="padding:12px 14px">
+          <div style="font-size:13px;font-weight:500;margin-bottom:2px">👁 Code Review</div>
+          <p style="margin:0;font-size:12px">Read each other's code, leave comments, and improve it together.</p>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card" style="padding:12px 14px">
+          <div style="font-size:13px;font-weight:500;margin-bottom:2px">⚠️ Merge Conflicts</div>
+          <p style="margin:0;font-size:12px">Students 3 and 4 both modify <code>app.js</code> — you'll resolve a real conflict.</p>
+        </div>
+        <div class="card" style="padding:12px 14px">
+          <div style="font-size:13px;font-weight:500;margin-bottom:2px">📋 Issues</div>
+          <p style="margin:0;font-size:12px">Track every task as a GitHub Issue and auto-close it via commit messages.</p>
+        </div>
+        <div class="card" style="padding:12px 14px">
+          <div style="font-size:13px;font-weight:500;margin-bottom:2px">📜 Git History</div>
+          <p style="margin:0;font-size:12px">At the end, run <code>git log --graph</code> and read the entire team's history.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Technology stack</div>
+    <div class="card">
+      <p>Pure HTML, CSS, and JavaScript — <strong>no frameworks, no install required</strong>. Open the file in any browser and it works. This keeps the project accessible to all students regardless of their setup, and keeps the focus on Git, not on build tools.</p>
+      <div class="code-block"><span class="c">task-manager/
+├── index.html     ← HTML structure (Student 1 creates skeleton)
+├── style.css      ← Styling (Student 2 owns this)
+├── app.js         ← JavaScript logic (Students 3 and 4 share this)
+├── README.md      ← Documentation (Student 4 writes this)
+└── .gitignore     ← Files to exclude from Git</span></div>
+    </div>
+  </div>
+
+  <!-- PROJECT ROLES -->
+  <div class="page" id="p-project-roles">
+    <div class="page-title">Roles & Tasks</div>
+    <div class="page-sub">Each student has a defined role and one GitHub Issue assigned to them. Everyone works in parallel on their own branch.</div>
+
+    <div class="team-role">
+      <div class="role-header">
+        <div class="avatar" style="background:var(--orange-light);color:var(--orange)">S1</div>
+        <div>
+          <div class="role-name">Student 1 — Team Lead & Repo Owner</div>
+          <div class="role-desc">Creates the repository, sets up the project structure, manages issues and branch protection</div>
+        </div>
+        <span class="badge badge-git" style="margin-left:auto">Issue #1</span>
+      </div>
+      <div class="code-block" style="font-size:12px"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Student 1's setup tasks:</span>
+
+<span class="c"># 1. Create the GitHub repository "task-manager"
+# 2. Clone it locally</span>
+<span class="cmd">git clone</span> git@github.com:your-username/task-manager.git
+<span class="cmd">cd</span> task-manager
+
+<span class="c"># 3. Create the project skeleton files
+#    (see Starter Code page for content)
+# 4. Commit and push the skeleton</span>
+<span class="cmd">git add</span> <span class="fl">.</span>
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Initial project structure (closes #1)"</span>
+<span class="cmd">git push</span>
+
+<span class="c"># 5. Enable branch protection on main
+# 6. Invite S2, S3, S4 as Collaborators
+#    (Settings → Collaborators → Add people)
+# 7. Create GitHub Issues #1 through #4</span></div>
+    </div>
+
+    <div class="team-role">
+      <div class="role-header">
+        <div class="avatar" style="background:var(--blue-light);color:var(--blue)">S2</div>
+        <div>
+          <div class="role-name">Student 2 — UI Developer</div>
+          <div class="role-desc">Builds the task input form and all CSS styling</div>
+        </div>
+        <span class="badge badge-gh" style="margin-left:auto">Issue #2</span>
+      </div>
+      <div class="code-block" style="font-size:12px"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Student 2's workflow:</span>
+<span class="cmd">git clone</span> git@github.com:team-username/task-manager.git
+<span class="cmd">cd</span> task-manager
+<span class="cmd">git checkout</span> <span class="fl">-b</span> feature/task-input-ui
+
+<span class="c"># Build the form in index.html and style it in style.css
+# Validate that the input is not empty</span>
+
+<span class="cmd">git add</span> index.html style.css
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add task input form with validation styling (closes #2)"</span>
+<span class="cmd">git push</span> <span class="fl">-u</span> origin feature/task-input-ui
+
+<span class="c"># Open Pull Request on GitHub
+# Request review from Student 1</span></div>
+    </div>
+
+    <div class="team-role">
+      <div class="role-header">
+        <div class="avatar" style="background:var(--green-light);color:var(--green)">S3</div>
+        <div>
+          <div class="role-name">Student 3 — Logic Developer</div>
+          <div class="role-desc">Implements task completion toggle and filter buttons in JavaScript</div>
+        </div>
+        <span class="badge badge-team" style="margin-left:auto">Issue #3</span>
+      </div>
+      <div class="code-block" style="font-size:12px"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Student 3's workflow:</span>
+<span class="cmd">git checkout</span> <span class="fl">-b</span> feature/task-complete-filter
+
+<span class="c"># Implement in app.js:
+# - Click a task to mark it complete/incomplete
+# - Filter buttons: All / Active / Done
+# - Update the task count display</span>
+
+<span class="cmd">git add</span> app.js
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add task completion toggle and filter (closes #3)"</span>
+<span class="cmd">git push</span> <span class="fl">-u</span> origin feature/task-complete-filter
+
+<span class="c"># Open PR, request review from Student 1
+# NOTE: S3 and S4 both edit app.js → expect a merge conflict!</span></div>
+    </div>
+
+    <div class="team-role">
+      <div class="role-header">
+        <div class="avatar" style="background:var(--purple-light);color:var(--purple)">S4</div>
+        <div>
+          <div class="role-name">Student 4 — Data & Documentation</div>
+          <div class="role-desc">Adds localStorage persistence and writes the README documentation</div>
+        </div>
+        <span class="badge badge-gh" style="margin-left:auto">Issue #4</span>
+      </div>
+      <div class="code-block" style="font-size:12px"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Student 4's workflow:</span>
+<span class="cmd">git checkout</span> <span class="fl">-b</span> feature/localstorage-persist
+
+<span class="c"># Implement in app.js:
+# - Save tasks array to localStorage on every change
+# - Load tasks from localStorage on page load</span>
+
+<span class="cmd">git add</span> app.js
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Persist tasks in localStorage (closes #4)"</span>
+
+<span class="c"># Also write the README</span>
+<span class="cmd">git add</span> README.md
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Write README with setup and usage guide"</span>
+<span class="cmd">git push</span> <span class="fl">-u</span> origin feature/localstorage-persist
+
+<span class="c"># Open PR, request review from Student 1</span></div>
+    </div>
+
+    <div class="section-label">GitHub Issues to create (Student 1)</div>
+    <div class="issue-item">
+      <div class="issue-num" style="background:var(--orange-light);color:var(--orange)">#1</div>
+      <div class="issue-text"><b>Project setup</b> — Create HTML skeleton, link CSS and JS files, add .gitignore, initial README. <em>Assigned: Student 1</em></div>
+    </div>
+    <div class="issue-item">
+      <div class="issue-num" style="background:var(--blue-light);color:var(--blue)">#2</div>
+      <div class="issue-text"><b>Task input form</b> — Text input field + "Add" button. Validate that input is not empty before adding. Apply all CSS styles. <em>Assigned: Student 2</em></div>
+    </div>
+    <div class="issue-item">
+      <div class="issue-num" style="background:var(--green-light);color:var(--green)">#3</div>
+      <div class="issue-text"><b>Task completion & filter</b> — Click a task to toggle complete/incomplete (strikethrough). Filter buttons: All / Active / Done. Show count of remaining tasks. <em>Assigned: Student 3</em></div>
+    </div>
+    <div class="issue-item">
+      <div class="issue-num" style="background:var(--purple-light);color:var(--purple)">#4</div>
+      <div class="issue-text"><b>Persistence & docs</b> — Save tasks to localStorage so they survive page refresh. Load saved tasks on page load. Write README with project description and how to run it. <em>Assigned: Student 4</em></div>
+    </div>
+  </div>
+
+  <!-- PROJECT STEPS -->
+  <div class="page" id="p-project-steps">
+    <div class="page-title">Step-by-Step Team Guide</div>
+    <div class="page-sub">The exact sequence of actions the team takes from start to finish — including a planned merge conflict.</div>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--orange)"></div>
+        <div class="tl-title">Phase 1 (S1 only) — Create and share the repo</div>
+        <div class="tl-desc">Create repo on GitHub, push the skeleton, enable branch protection, invite teammates as Collaborators, create all 4 Issues.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--blue)"></div>
+        <div class="tl-title">Phase 2 (S2, S3, S4) — Clone and branch in parallel</div>
+        <div class="tl-desc">Each person clones the repo and creates their own feature branch. All three work independently and simultaneously.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--blue)"></div>
+        <div class="tl-title">Phase 3 — Build, commit, push</div>
+        <div class="tl-desc">Each student implements their feature with multiple small commits. Push regularly to back up work on GitHub.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--purple)"></div>
+        <div class="tl-title">Phase 4 (S2) — First Pull Request</div>
+        <div class="tl-desc">S2 opens a PR for the UI. S1 reviews it, requests one small change, S2 pushes the fix, S1 approves and merges. Issue #2 closes automatically.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--purple)"></div>
+        <div class="tl-title">Phase 5 (S3) — Second PR + conflict</div>
+        <div class="tl-desc">S3 opens PR for Issue #3. After S2's merge, S3 must <code>git pull origin main</code> — their branch now conflicts with main because app.js changed. S3 resolves the conflict locally and pushes again.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--purple)"></div>
+        <div class="tl-title">Phase 6 (S4) — Third PR + conflict</div>
+        <div class="tl-desc">Same situation as S3 — S4 resolves the conflict in app.js after pulling the latest main. S1 reviews and merges.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--green)"></div>
+        <div class="tl-title">Phase 7 — Team debrief</div>
+        <div class="tl-desc">Everyone pulls main. Run <code>git log --oneline --graph --all</code> together on the projector. Read the full history and discuss what worked and what was hard.</div>
+      </div>
+    </div>
+
+    <div class="section-label">Resolving the expected conflict (S3 and S4)</div>
+    <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># When your PR is "out of date" after S2 merged:</span>
+
+<span class="c"># 1. Fetch the latest main</span>
+<span class="cmd">git checkout</span> main
+<span class="cmd">git pull</span>
+
+<span class="c"># 2. Go back to your feature branch</span>
+<span class="cmd">git checkout</span> feature/your-branch
+
+<span class="c"># 3. Merge main into your branch to bring it up to date</span>
+<span class="cmd">git merge</span> main
+
+<span class="c"># 4. If a conflict appears in app.js, open the file,
+#    choose the correct code, remove the markers:
+#    &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+#    =======
+#    &gt;&gt;&gt;&gt;&gt;&gt;&gt;</span>
+
+<span class="c"># 5. Stage the resolved file and commit</span>
+<span class="cmd">git add</span> app.js
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Merge main and resolve conflict in app.js"</span>
+
+<span class="c"># 6. Push — your PR on GitHub updates automatically</span>
+<span class="cmd">git push</span></div>
+
+    <div class="tip tip-success">
+      <strong>The debrief command:</strong> Run this at the very end and display it on the projector for the whole team to read:
+      <div class="code-block" style="margin-top:8px"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git log</span> <span class="fl">--oneline --graph --all --decorate</span></div>
+    </div>
+  </div>
+
+  <!-- STARTER CODE -->
+  <div class="page" id="p-project-files">
+    <div class="page-title">Starter Code</div>
+    <div class="page-sub">Student 1 creates these four files as the initial project skeleton and pushes them as the first commit.</div>
+
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--orange-light);color:var(--orange)">📄</div>
+        <div class="accordion-title">index.html</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <div class="code-block" style="font-size:12px"><button class="copy-btn" onclick="copyCode(this)">copy</button>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Task Manager&lt;/title&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div id="app"&gt;
+    &lt;header&gt;
+      &lt;h1&gt;Task Manager&lt;/h1&gt;
+      &lt;span id="task-count"&gt;&lt;/span&gt;
+    &lt;/header&gt;
+
+    &lt;!-- Student 2 (S2): Build the input form below --&gt;
+    &lt;section id="input-section"&gt;
+      &lt;!-- input field + Add button go here --&gt;
+    &lt;/section&gt;
+
+    &lt;!-- Student 3 (S3): Build the filter buttons below --&gt;
+    &lt;section id="filter-section"&gt;
+      &lt;!-- All / Active / Done filter buttons go here --&gt;
+    &lt;/section&gt;
+
+    &lt;!-- Shared: The task list is rendered by app.js --&gt;
+    &lt;ul id="task-list"&gt;&lt;/ul&gt;
+  &lt;/div&gt;
+  &lt;script src="app.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--blue-light);color:var(--blue)">🎨</div>
+        <div class="accordion-title">style.css — starter (Student 2 expands this)</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <div class="code-block" style="font-size:12px"><button class="copy-btn" onclick="copyCode(this)">copy</button>/* Base styles — Student 2 fills in the rest */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f5f0;
+  color: #1a1a18;
+  padding: 20px;
+}
+
+#app {
+  max-width: 560px;
+  margin: 40px auto;
+  background: white;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+}
+
+/* TODO (Student 2): Style #input-section, #filter-section,
+   #task-list items, .task-complete (strikethrough), buttons */</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--green-light);color:var(--green)">⚙️</div>
+        <div class="accordion-title">app.js — starter (Students 3 & 4 expand this)</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <div class="code-block" style="font-size:12px"><button class="copy-btn" onclick="copyCode(this)">copy</button">// Task Manager — app.js
+// Student 3: implement addTask(), toggleTask(), filterTasks()
+// Student 4: implement saveToStorage(), loadFromStorage()
+
+let tasks = [];          // array of { id, text, completed }
+let currentFilter = 'all';
+
+function renderTasks() {
+  const list = document.getElementById('task-list');
+  const count = document.getElementById('task-count');
+  const filtered = tasks.filter(t => {
+    if (currentFilter === 'active') return !t.completed;
+    if (currentFilter === 'done')   return t.completed;
+    return true;
+  });
+  list.innerHTML = filtered.map(t => `
+    &lt;li class="${t.completed ? 'task-complete' : ''}"
+        onclick="toggleTask(${t.id})"&gt;
+      ${t.text}
+    &lt;/li&gt;
+  `).join('');
+  const remaining = tasks.filter(t => !t.completed).length;
+  count.textContent = `${remaining} task${remaining !== 1 ? 's' : ''} left`;
+}
+
+// TODO (Student 3): function addTask(text) { ... }
+// TODO (Student 3): function toggleTask(id) { ... }
+// TODO (Student 3): function filterTasks(filter) { ... }
+
+// TODO (Student 4): function saveToStorage() { localStorage.setItem(...) }
+// TODO (Student 4): function loadFromStorage() { ... = JSON.parse(localStorage.getItem(...)) }
+
+// TODO (Student 4): Load saved tasks on page load
+// loadFromStorage();
+// renderTasks();</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--purple-light);color:var(--purple)">📋</div>
+        <div class="accordion-title">README.md — template (Student 4 fills this in)</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <div class="code-block" style="font-size:12px"><button class="copy-btn" onclick="copyCode(this)">copy</button"># Task Manager
+
+A simple task management web app built as a team Git/GitHub learning project.
+
+## Team
+
+| Student | Role |
+|---------|------|
+| Student 1 | Team Lead & Project Setup |
+| Student 2 | UI & Styling |
+| Student 3 | Task Logic & Filtering |
+| Student 4 | Data Persistence & Docs |
+
+## Features
+
+- Add tasks with a text input form
+- Mark tasks as complete/incomplete
+- Filter by: All / Active / Done
+- Tasks persist across browser refreshes (localStorage)
+
+## How to run
+
+1. Clone the repository:
+   git clone https://github.com/team/task-manager.git
+
+2. Open index.html in any web browser
+   (no build step required)
+
+## Git workflow used
+
+Feature branch workflow:
+- Each feature developed on its own branch
+- All merges done via Pull Request with code review
+- Branch protection on main (requires 1 approval)</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--bg);color:var(--muted);border:0.5px solid var(--border)">🚫</div>
+        <div class="accordion-title">.gitignore</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <div class="code-block" style="font-size:12px"><button class="copy-btn" onclick="copyCode(this)">copy</button"># .gitignore for Task Manager project
+
+# Windows system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+
+# Editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment variables (if added later)
+.env
+.env.local</div>
+      </div>
+    </div>
+
+    <div class="tip tip-success" style="margin-top:12px">
+      <strong>Done!</strong> All four files go in the root of the project folder. Student 1 commits them with <code>git commit -m "Initial project structure (closes #1)"</code> and pushes. Then teammates clone and start their branches.
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // Navigation
+  const pages = {
+    'overview':       'p-overview',
+    'git-setup':      'p-git-setup',
+    'git-ops':        'p-git-ops',
+    'git-branch':     'p-git-branch',
+    'gh-setup':       'p-gh-setup',
+    'gh-ops':         'p-gh-ops',
+    'workflow':       'p-workflow',
+    'project-intro':  'p-project-intro',
+    'project-roles':  'p-project-roles',
+    'project-steps':  'p-project-steps',
+    'project-files':  'p-project-files',
+  };
+
+  function navigate(id, el) {
+    // Hide all pages
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    // Show target
+    const target = document.getElementById(pages[id]);
+    if (target) target.classList.add('active');
+    // Update nav
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (el) el.classList.add('active');
+    // Close mobile sidebar
+    document.getElementById('sidebar').classList.remove('open');
+    // Scroll to top
+    document.querySelector('.main').scrollTop = 0;
+    window.scrollTo(0, 0);
+  }
+
+  function toggleAcc(header) {
+    header.parentElement.classList.toggle('open');
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  function copyCode(btn) {
+    // Get all text from code block, excluding the copy button text
+    const block = btn.parentElement;
+    const clone = block.cloneNode(true);
+    clone.querySelectorAll('.copy-btn').forEach(b => b.remove());
+    const text = clone.innerText.trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ copied';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    }).catch(() => {
+      // Fallback for older browsers
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.textContent = '✓ copied';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  // Close sidebar when clicking outside on mobile
+  document.addEventListener('click', e => {
+    const sidebar = document.getElementById('sidebar');
+    if (window.innerWidth <= 768 &&
+        sidebar.classList.contains('open') &&
+        !sidebar.contains(e.target) &&
+        !e.target.classList.contains('hamburger')) {
+      sidebar.classList.remove('open');
+    }
+  });
+</script>
+</body>
+</html>
+      --muted: #9c9a90;
+      --orange-light: #2a1a0f;
+      --blue-light: #0d1a2e;
+      --green-light: #0a1f14;
+      --purple-light: #1a1028;
+      --red-light: #2a0f0f;
+    }
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* SIDEBAR LAYOUT */
+  .layout {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 0.5px solid var(--border);
+    padding: 24px 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  .sidebar-logo {
+    padding: 0 20px 20px;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .sidebar-logo-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sidebar-logo-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .git-icon {
+    width: 28px; height: 28px;
+    background: var(--orange);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .nav-section {
+    padding: 6px 12px 2px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 0;
+    transition: all .15s;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active {
+    color: var(--orange);
+    background: var(--orange-light);
+    border-left-color: var(--orange);
+    font-weight: 500;
+  }
+  .nav-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* MOBILE HEADER */
+  .mobile-header {
+    display: none;
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+    padding: 12px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+  }
+  .mobile-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .hamburger {
+    background: none;
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  /* MAIN */
+  .main {
+    margin-left: 240px;
+    flex: 1;
+    padding: 40px 48px;
+    max-width: 900px;
+  }
+
+  /* PAGE */
+  .page { display: none; }
+  .page.active { display: block; animation: fadeIn .2s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* SECTION HEADER */
+  .page-title {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  .page-sub {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  /* PROSE */
+  p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 10px;
+  }
+  p b, p strong { color: var(--text); font-weight: 500; }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+  }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+
+  @media (max-width: 700px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .badge-git  { background: var(--orange-light); color: var(--orange); }
+  .badge-gh   { background: var(--purple-light); color: var(--purple); }
+  .badge-team { background: var(--green-light);  color: var(--green);  }
+  .badge-warn { background: var(--red-light);    color: var(--red);    }
+
+  /* CODE */
+  .code-block {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 10px 0;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: var(--text);
+    position: relative;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .code-block .c  { color: var(--muted); }
+  .code-block .cmd { color: var(--orange); font-weight: 600; }
+  .code-block .fl  { color: var(--blue); }
+  .code-block .str { color: var(--green); }
+  .code-block .kw  { color: var(--purple); }
+
+  .copy-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-family: var(--sans);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    cursor: pointer;
+    color: var(--muted);
+  }
+  .copy-btn:hover { color: var(--text); }
+
+  /* ACCORDION */
+  .accordion {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .accordion-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 18px;
+    cursor: pointer;
+    user-select: none;
+    transition: background .15s;
+  }
+  .accordion-header:hover { background: var(--bg); }
+  .accordion-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .accordion-title { font-size: 14px; font-weight: 500; flex: 1; }
+  .accordion-chevron { color: var(--muted); font-size: 11px; transition: transform .25s; }
+  .accordion.open .accordion-chevron { transform: rotate(180deg); }
+  .accordion-body { display: none; padding: 0 18px 18px; }
+  .accordion.open .accordion-body { display: block; }
+
+  /* TIP */
+  .tip {
+    border-left: 3px solid var(--orange);
+    background: var(--orange-light);
+    border-radius: 0 7px 7px 0;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin: 10px 0;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .tip-info    { border-left-color: var(--blue);   background: var(--blue-light);   }
+  .tip-success { border-left-color: var(--green);  background: var(--green-light);  }
+  .tip-warn    { border-left-color: var(--red);    background: var(--red-light);    }
+
+  /* TIMELINE */
+  .timeline { padding-left: 28px; position: relative; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px; top: 4px; bottom: 4px;
+    width: 1px;
+    background: var(--border);
+  }
+  .tl-item { position: relative; margin-bottom: 20px; }
+  .tl-dot {
+    position: absolute;
+    left: -25px; top: 3px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--surface);
+  }
+  .tl-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+  .tl-desc  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  hr.divider {
+    border: none;
+    border-top: 0.5px solid var(--border);
+    margin: 22px 0;
+  }
+
+  /* AREA BOXES */
+  .area-box {
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 13px;
+  }
+  .area-title { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .area-desc  { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* TEAM ROLES */
+  .team-role {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .role-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .role-name   { font-size: 14px; font-weight: 500; }
+  .role-desc   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ISSUE CARDS */
+  .issue-item {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13px;
+  }
+  .issue-num {
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-top: 1px;
+  }
+  .issue-text { line-height: 1.5; }
+  .issue-text b { font-weight: 500; }
+  .issue-text em { color: var(--muted); font-style: normal; font-size: 12px; }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 22px 0 10px;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--orange-light) 0%, var(--blue-light) 100%);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .hero-icon {
+    width: 56px; height: 56px;
+    background: var(--orange);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+  .hero-title { font-size: 20px; font-weight: 600; }
+  .hero-sub   { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: var(--orange);
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--orange);
+    border-radius: 2px;
+    transition: width .4s ease;
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); transition: transform .3s ease; }
+    .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,.15); }
+    .mobile-header { display: block; }
+    .main { margin-left: 0; padding: 20px 16px; }
+    .hero { flex-direction: column; }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* PRINT */
+  @media print {
+    .sidebar, .mobile-header, .copy-btn { display: none !important; }
+    .main { margin: 0; padding: 20px; max-width: 100%; }
+    .page { display: block !important; page-break-before: always; }
+    .page:first-of-type { page-break-before: avoid; }
+    .accordion-body { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MOBILE HEADER -->
+<header class="mobile-header">
+  <div class="mobile-header-inner">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="git-icon">G</div>
+      <span style="font-size:14px;font-weight:600">Git & GitHub Guide — Windows</span>
+    </div>
+    <button class="hamburger" onclick="toggleSidebar()">☰ Menu</button>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-title">
+      <div class="git-icon">G</div>
+      Git & GitHub
+    <span style="font-size:10px;font-weight:500;color:var(--blue);display:block;margin-top:2px">Windows Edition</span>
+    </div>
+    <div class="sidebar-logo-sub">Software Configuration Management Course</div>
+  </div>
+
+  <div class="nav-section">Getting Started</div>
+  <a class="nav-item active" onclick="navigate('overview',this)">
+    <div class="nav-dot" style="background:#888"></div> Course Overview
+  </a>
+
+  <div class="nav-section">Git — Local</div>
+  <a class="nav-item" onclick="navigate('git-setup',this)">
+    <div class="nav-dot" style="background:var(--orange)"></div> Setup & Install
+  </a>
+  <a class="nav-item" onclick="navigate('git-ops',this)">
+    <div class="nav-dot" style="background:var(--orange)"></div> Core Operations
+  </a>
+  <a class="nav-item" onclick="navigate('git-branch',this)">
+    <div class="nav-dot" style="background:var(--orange)"></div> Branching & Merging
+  </a>
+
+  <div class="nav-section">GitHub — Cloud</div>
+  <a class="nav-item" onclick="navigate('gh-setup',this)">
+    <div class="nav-dot" style="background:var(--purple)"></div> Setup & SSH
+  </a>
+  <a class="nav-item" onclick="navigate('gh-ops',this)">
+    <div class="nav-dot" style="background:var(--purple)"></div> Collaboration Tools
+  </a>
+  <a class="nav-item" onclick="navigate('workflow',this)">
+    <div class="nav-dot" style="background:var(--purple)"></div> Team Workflow
+  </a>
+
+  <div class="nav-section">Team Project</div>
+  <a class="nav-item" onclick="navigate('project-intro',this)">
+    <div class="nav-dot" style="background:var(--green)"></div> Project Overview
+  </a>
+  <a class="nav-item" onclick="navigate('project-roles',this)">
+    <div class="nav-dot" style="background:var(--green)"></div> Roles & Tasks
+  </a>
+  <a class="nav-item" onclick="navigate('project-steps',this)">
+    <div class="nav-dot" style="background:var(--green)"></div> Step-by-Step Guide
+  </a>
+  <a class="nav-item" onclick="navigate('project-files',this)">
+    <div class="nav-dot" style="background:var(--green)"></div> Starter Code
+  </a>
+
+  <div style="padding:16px 20px 24px;border-top:0.5px solid var(--border);margin-top:16px">
+    <div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Course Instructor</div>
+    <div style="font-size:11px;color:var(--muted);line-height:2">
+      <span style="color:var(--text);font-weight:500">Dr. Waleed Alhumud</span><br>
+      Software Engineering Dept.<br>
+      College of Computer and<br>
+      Information Sciences<br>
+      Jouf University<br>
+      Office: 2020<br>
+      <a href="mailto:Wgalhumud@ju.edu.sa" style="color:var(--orange);text-decoration:none">Wgalhumud@ju.edu.sa</a>
+    </div>
+  </div>
+
+</aside>
+
+<main class="main">
+
+  <!-- OVERVIEW -->
+  <div class="page active" id="p-overview">
+    <div class="hero">
+      <div class="hero-icon">🗂</div>
+      <div>
+        <div class="hero-title">Git & GitHub — From Zero to Team Collaboration <span style="font-size:14px;font-weight:400;color:var(--blue)">(Windows Edition)</span></div>
+        <div class="hero-sub">A complete guide for software engineering students. Covers setup, core operations, and a hands-on 4-student team project.</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">🗂 Git <span class="badge badge-git">Local</span></div>
+        <p>A <strong>version control system</strong> that runs entirely on your computer. It tracks every change to your code, lets you travel back in time, and manages parallel lines of development — all offline.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">☁️ GitHub <span class="badge badge-gh">Cloud</span></div>
+        <p>A <strong>cloud platform</strong> that hosts your Git repository online. It adds team collaboration tools: pull requests, code reviews, issues, and access control — keeping your whole team in sync.</p>
+      </div>
+    </div>
+
+    <div class="tip tip-info">
+      <strong>The key mental model:</strong> Git is the engine that lives on your machine and records history. GitHub is the shared garage where your team parks work and exchanges changes. You can use Git without GitHub, but not GitHub without Git.
+    </div>
+
+    <div class="section-label">Learning Roadmap</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--orange)"></div>
+        <div class="tl-title">1 — Git Setup</div>
+        <div class="tl-desc">Install Git, configure your identity, and understand the three areas: working directory, staging area, and repository.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--orange)"></div>
+        <div class="tl-title">2 — Git Core Operations</div>
+        <div class="tl-desc">init, clone, add, commit, status, log, diff, and restore — the daily commands every developer uses.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--orange)"></div>
+        <div class="tl-title">3 — Git Branching & Merging</div>
+        <div class="tl-desc">Create branches for each feature, merge them back, and resolve conflicts when two people edit the same code.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--purple)"></div>
+        <div class="tl-title">4 — GitHub Setup</div>
+        <div class="tl-desc">Create an account, generate SSH keys, and connect your local repository to a remote on GitHub.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--purple)"></div>
+        <div class="tl-title">5 — GitHub Collaboration Tools</div>
+        <div class="tl-desc">push, pull, fork, pull requests, code review, issues, and branch protection rules.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--purple)"></div>
+        <div class="tl-title">6 — Team Git Workflow</div>
+        <div class="tl-desc">Learn the feature-branch workflow used by professional development teams worldwide.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--green)"></div>
+        <div class="tl-title">7 — Team Project: Task Manager App</div>
+        <div class="tl-desc">A 4-student collaborative project applying everything above — with real roles, pull requests, code reviews, and conflict resolution.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GIT SETUP -->
+  <div class="page" id="p-git-setup">
+    <div class="page-title">Git Setup</div>
+    <div class="page-sub">Install Git on your computer and configure it so every commit you make carries your identity.</div>
+
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--orange-light);color:var(--orange)">1</div>
+        <div class="accordion-title">Install Git</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <p><strong>Windows:</strong> Go to <code>git-scm.com</code>, click <strong>Download for Windows</strong>, and run the installer. Use all default options on every screen.</p>
+        <div class="tip tip-info"><strong>Git Bash is installed automatically.</strong> After installation, open <strong>Git Bash</strong> from the Start menu (search "Git Bash"). Use Git Bash for every command in this guide — do NOT use PowerShell or CMD as the commands will not work.</div>
+               <p>Verify the installation worked:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git</span> <span class="fl">--version</span>
+<span class="c"># Expected output: git version 2.x.x</span></div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--orange-light);color:var(--orange)">2</div>
+        <div class="accordion-title">Set your identity</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <p>Git attaches your name and email to every commit. Set these once globally so you never have to repeat it:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git config</span> <span class="fl">--global</span> user.name <span class="str">"Your Full Name"</span>
+<span class="cmd">git config</span> <span class="fl">--global</span> user.email <span class="str">"you@example.com"</span>
+<span class="cmd">git config</span> <span class="fl">--global</span> core.editor <span class="str">"code --wait"</span>   <span class="c"># VS Code as editor</span>
+<span class="cmd">git config</span> <span class="fl">--global</span> init.defaultBranch main          <span class="c"># Use 'main' not 'master'</span></div>
+        <p>Verify all settings are saved:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git config</span> <span class="fl">--list</span></div>
+        <div class="tip">Use the same email you'll register on GitHub — this is how GitHub links your local commits to your online profile and contribution graph.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--orange-light);color:var(--orange)">3</div>
+        <div class="accordion-title">Understand the three areas</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <p>Every Git project has three distinct areas. Understanding them is the key to understanding Git:</p>
+        <div class="grid-3" style="margin-top:12px">
+          <div class="area-box" style="background:var(--orange-light)">
+            <div class="area-title" style="color:var(--orange)">📝 Working Directory</div>
+            <div class="area-desc">Where you edit files normally. Changes here are untracked by Git until you explicitly stage them.</div>
+          </div>
+          <div class="area-box" style="background:var(--blue-light)">
+            <div class="area-title" style="color:var(--blue)">📋 Staging Area</div>
+            <div class="area-desc">A "review queue" before committing. Files you <code>git add</code> land here. You control exactly what goes into the next commit.</div>
+          </div>
+          <div class="area-box" style="background:var(--green-light)">
+            <div class="area-title" style="color:var(--green)">🗄 Repository (.git)</div>
+            <div class="area-desc">The permanent history database inside your project folder. Every <code>git commit</code> adds a snapshot here forever.</div>
+          </div>
+        </div>
+        <div class="code-block"><span class="c"># The three-step flow:</span>
+<span class="c">#</span>
+<span class="c">#  Working Directory  →  Staging Area  →  Repository</span>
+<span class="c">#      (edit files)       (git add .)     (git commit)</span>
+<span class="c">#</span>
+<span class="c"># Going backwards:</span>
+<span class="c">#  git restore --staged  ←  unstage a file</span>
+<span class="c">#  git restore           ←  discard working dir changes</span></div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--orange-light);color:var(--orange)">4</div>
+        <div class="accordion-title">Initialise your first repository</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <p>Create a project folder and turn it into a Git repository:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Create a project folder and enter it</span>
+<span class="cmd">mkdir</span> my-first-project
+<span class="cmd">cd</span> my-first-project
+
+<span class="c"># Initialise Git — creates the hidden .git folder inside</span>
+<span class="cmd">git init</span>
+
+<span class="c"># Confirm Git is tracking this folder</span>
+<span class="cmd">git status</span>
+<span class="c"># Expected: "On branch main — No commits yet"</span></div>
+        <div class="tip tip-info">The <code>.git</code> folder is Git's entire brain — the full history, configuration, and branch data for your project. Never delete or edit it manually. If you run <code>ls -a</code> you can see it sitting in your project folder.</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--orange-light);color:var(--orange)">5</div>
+        <div class="accordion-title">Create a .gitignore to ignore Windows clutter files in this repo <span style="font-size:11px;font-weight:400;color:var(--blue);margin-left:6px">Windows</span></div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <p><strong>Why do we need this?</strong> After <code>git init</code> you ran <code>git status</code> and may see files like <code>Thumbs.db</code> or <code>desktop.ini</code> listed as untracked. Windows creates these files automatically when you browse folders in File Explorer. They have <strong>nothing to do with your code</strong> and should never go into Git.</p>
+        <p>The fix is a <code>.gitignore</code> file <strong>inside this project folder</strong>. It tells Git which files to silently skip. It only applies to <strong>this one repo</strong> — so every new project you create goes through this same step.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Step 1: Create .gitignore and add .DS_Store to it in one command</span>
+<span class="c"># Add Windows clutter rules to .gitignore</span>
+<span class="cmd">echo</span> <span class="str">"Thumbs.db"</span> &gt; .gitignore
+<span class="cmd">echo</span> <span class="str">"desktop.ini"</span> &gt;&gt; .gitignore
+<span class="cmd">echo</span> <span class="str">"*.lnk"</span> &gt;&gt; .gitignore
+
+<span class="c"># Step 2: Confirm the rules are in the file</span>
+<span class="cmd">cat</span> .gitignore
+<span class="c"># Expected output:
+# Thumbs.db
+# desktop.ini
+# *.lnk</span>
+
+<span class="c"># Step 3: Stage .gitignore and commit it immediately</span>
+<span class="cmd">git add</span> .gitignore
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add .gitignore to ignore Windows clutter files"</span>
+
+<span class="c"># Step 4: Run git status — nothing should appear now</span>
+<span class="cmd">git status</span>
+<span class="c"># Expected: "nothing to commit, working tree clean"</span></div>
+        <div class="tip tip-success">By committing <code>.gitignore</code> right away, it disappears from <code>git status</code> immediately and every teammate who clones this repo gets the same ignore rules automatically.</div>
+        <p style="margin-top:12px">You can add more rules to <code>.gitignore</code> any time — one entry per line:</p>
+        <div class="code-block"><span class="c"># .gitignore — common entries for web projects</span>
+Thumbs.db        <span class="c"># Windows thumbnail cache</span>
+desktop.ini      <span class="c"># Windows folder settings</span>
+.env             <span class="c"># secret API keys — never commit these</span>
+node_modules/    <span class="c"># installed packages — always re-installable</span>
+*.log            <span class="c"># log files</span></div>
+        <div class="tip tip-warn"><strong>Already committed Thumbs.db or desktop.ini by mistake?</strong> Adding them to <code>.gitignore</code> alone is not enough — Git will keep tracking them because they are already in history. Remove them from tracking first:</div>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Removes from Git only — files stay on your disk</span>
+<span class="cmd">git rm</span> <span class="fl">--cached</span> Thumbs.db
+<span class="cmd">git rm</span> <span class="fl">--cached</span> desktop.ini
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Remove Windows clutter and add .gitignore"</span></div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--orange-light);color:var(--orange)">6</div>
+        <div class="accordion-title">Create your first file and make your first commit</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <p>Now that the repo is clean, create a real project file and save your first snapshot to history:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Create a README file</span>
+<span class="cmd">echo</span> <span class="str">"# My First Project"</span> &gt; README.md
+
+<span class="c"># Check status — Git sees the new file as "untracked"</span>
+<span class="cmd">git status</span>
+
+<span class="c"># Stage the file</span>
+<span class="cmd">git add</span> README.md
+
+<span class="c"># Check status again — file is now "staged" (green)</span>
+<span class="cmd">git status</span>
+
+<span class="c"># Save a permanent snapshot to the repository</span>
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Initial commit: add README"</span>
+
+<span class="c"># View your commit in the history</span>
+<span class="cmd">git log</span> <span class="fl">--oneline</span></div>
+        <div class="tip tip-success">Notice how <code>git status</code> changes at each step — untracked → staged → committed. That three-step progression is the core Git loop you will repeat thousands of times.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GIT OPERATIONS -->
+  <div class="page" id="p-git-ops">
+    <div class="page-title">Git Core Operations</div>
+    <div class="page-sub">The commands you'll use every single day. Learn each one with a real example.</div>
+
+    <div class="section-label">Live Demo Project — follow along in class</div>
+    <div class="tip tip-info" style="margin-bottom:14px">
+      <strong>Before the commands:</strong> Create this small Python project on your machine first. Each file is intentionally simple so students focus on Git, not on the code itself. Every operation below will be demonstrated on these exact files.
+    </div>
+
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--green-light);color:var(--green)">📁</div>
+        <div class="accordion-title">Project structure — what we are building</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <p>A tiny Python calculator app split across three files. Small enough to understand instantly, but enough files to show staging individual files vs. staging everything.</p>
+        <div class="code-block"><span class="c">git-demo/
+├── .gitignore      ← step 5 from Setup (already committed)
+├── calculator.py   ← the main functions: add, subtract, multiply
+├── main.py         ← runs the calculator and prints results
+└── README.md       ← project description</span></div>
+      </div>
+    </div>
+
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--green-light);color:var(--green)">🐍</div>
+        <div class="accordion-title">calculator.py</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <p>The core module. Students will <strong>edit this file later</strong> to demonstrate <code>git diff</code>, <code>git restore</code>, and multiple commits.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># calculator.py</span>
+
+<span class="kw">def</span> <span class="cmd">add</span>(a, b):
+    <span class="str">"""Return the sum of a and b."""</span>
+    <span class="kw">return</span> a + b
+
+<span class="kw">def</span> <span class="cmd">subtract</span>(a, b):
+    <span class="str">"""Return the difference of a and b."""</span>
+    <span class="kw">return</span> a - b
+
+<span class="kw">def</span> <span class="cmd">multiply</span>(a, b):
+    <span class="str">"""Return the product of a and b."""</span>
+    <span class="kw">return</span> a * b</div>
+      </div>
+    </div>
+
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--green-light);color:var(--green)">🐍</div>
+        <div class="accordion-title">main.py</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <p>The entry point. Students will <strong>add a new line to this file</strong> in a separate commit to show that Git tracks each change independently.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># main.py</span>
+
+<span class="kw">from</span> calculator <span class="kw">import</span> add, subtract, multiply
+
+<span class="cmd">print</span>(<span class="str">"Addition:       5 + 3 ="</span>, add(5, 3))
+<span class="cmd">print</span>(<span class="str">"Subtraction:    5 - 3 ="</span>, subtract(5, 3))
+<span class="cmd">print</span>(<span class="str">"Multiplication: 5 x 3 ="</span>, multiply(5, 3))</div>
+      </div>
+    </div>
+
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--green-light);color:var(--green)">📋</div>
+        <div class="accordion-title">Full live demo walkthrough — run this in class</div>
+        <div class="accordion-chevron">▼</div>
+      </div>
+      <div class="accordion-body">
+        <p>Follow these steps live on the projector. Each block demonstrates one Git operation on the real Python files.</p>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:4px">① git status — see what Git notices</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># After creating the two Python files, check what Git sees</span>
+<span class="cmd">git status</span>
+<span class="c"># Shows: calculator.py and main.py as Untracked (red)</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">② git add — stage one file at a time to show the difference</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Stage only calculator.py — NOT main.py yet</span>
+<span class="cmd">git add</span> calculator.py
+<span class="cmd">git status</span>
+<span class="c"># calculator.py is green (staged), main.py is still red (untracked)</span>
+<span class="c"># 👆 This is the key teaching moment: staging is a deliberate choice</span>
+
+<span class="c"># Now stage main.py too</span>
+<span class="cmd">git add</span> main.py
+<span class="cmd">git status</span>
+<span class="c"># Both files are now green (staged)</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">③ git commit — save the first snapshot</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add calculator and main modules"</span>
+<span class="cmd">git status</span>
+<span class="c"># "nothing to commit, working tree clean"</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">④ git log — read the history</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git log</span> <span class="fl">--oneline</span>
+<span class="c"># Shows the two commits so far:
+#   a3f1c2b  Add calculator and main modules
+#   9e2d410  Add .gitignore to ignore .DS_Store</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">⑤ git diff — see changes before staging</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Edit calculator.py — add a divide function at the bottom:</span>
+<span class="c"># def divide(a, b):
+#     return a / b</span>
+
+<span class="c"># Now check what changed — BEFORE git add</span>
+<span class="cmd">git diff</span>
+<span class="c"># Shows the new lines in green with a + sign</span>
+<span class="c"># This is exactly what will go into the next commit</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">⑥ git restore — undo a change you don't want</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Suppose you made a typo or want to undo the change</span>
+<span class="c"># BEFORE staging — just restore the file</span>
+<span class="cmd">git restore</span> calculator.py
+<span class="cmd">git diff</span>
+<span class="c"># Nothing — the change is completely gone, file is back to last commit</span>
+
+<span class="c"># Re-add the divide function, then stage it</span>
+<span class="cmd">git add</span> calculator.py
+
+<span class="c"># AFTER staging — if you change your mind, unstage it</span>
+<span class="cmd">git restore</span> <span class="fl">--staged</span> calculator.py
+<span class="cmd">git status</span>
+<span class="c"># File is back to untracked — the change is in the file but NOT staged</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">⑦ Second commit — add the divide function properly</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Stage and commit the divide function</span>
+<span class="cmd">git add</span> calculator.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add divide function to calculator"</span>
+
+<span class="c"># Also update main.py to use it</span>
+<span class="c"># Add this line to main.py:
+# print("Division:       6 / 3 =", divide(6, 3))</span>
+<span class="c"># (also add divide to the import line at the top)</span>
+
+<span class="cmd">git add</span> main.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Update main to show division result"</span>
+
+<span class="c"># Now read the full history — 3 commits visible</span>
+<span class="cmd">git log</span> <span class="fl">--oneline</span></div>
+
+        <div class="tip tip-success" style="margin-top:12px">
+          <strong>What students have seen by the end:</strong> status (red → green → clean), add (one file at a time), commit (twice with meaningful messages), log (growing history), diff (seeing changes before staging), and restore (undoing before and after staging). All on real Python code they can run.
+        </div>
+      </div>
+    </div>
+
     <hr class="divider">
     <div class="section-label">Command reference</div>
 
