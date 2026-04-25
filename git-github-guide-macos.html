@@ -943,77 +943,9 @@ node_modules/    <span class="c"># installed packages — always re-installable<
       </div>
     </div>
 
-    <hr class="divider">
-    <div class="section-label">Command reference</div>
-
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title"><span class="badge badge-git">git status</span></div>
-        <p>Shows what has changed since the last commit — untracked files, staged files, and modified files.</p>
-        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git status</span>
-<span class="c"># Short version</span>
-<span class="cmd">git status</span> <span class="fl">-s</span></div>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="badge badge-git">git add</span></div>
-        <p>Moves files from your working directory into the staging area.</p>
-        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Stage one specific file</span>
-<span class="cmd">git add</span> index.html
-
-<span class="c"># Stage all changed files</span>
-<span class="cmd">git add</span> <span class="fl">.</span>
-
-<span class="c"># Stage parts of a file interactively</span>
-<span class="cmd">git add</span> <span class="fl">-p</span></div>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="badge badge-git">git commit</span></div>
-        <p>Saves a permanent snapshot of everything in the staging area.</p>
-        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Commit with a message</span>
-<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add homepage layout"</span>
-
-<span class="c"># Stage + commit in one step</span>
-<span class="cmd">git commit</span> <span class="fl">-am</span> <span class="str">"Fix navigation bug"</span></div>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="badge badge-git">git log</span></div>
-        <p>Browse the commit history. Every commit has a unique hash ID.</p>
-        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Full history</span>
-<span class="cmd">git log</span>
-
-<span class="c"># Compact one-line view</span>
-<span class="cmd">git log</span> <span class="fl">--oneline</span>
-
-<span class="c"># Visual branch graph</span>
-<span class="cmd">git log</span> <span class="fl">--oneline --graph --all</span></div>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="badge badge-git">git diff</span></div>
-        <p>Shows exactly what changed — line by line — before staging.</p>
-        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Unstaged changes</span>
-<span class="cmd">git diff</span>
-
-<span class="c"># Staged changes (ready to commit)</span>
-<span class="cmd">git diff</span> <span class="fl">--staged</span>
-
-<span class="c"># Compare two commits</span>
-<span class="cmd">git diff</span> abc1234 def5678</div>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="badge badge-git">git restore</span></div>
-        <p>Undo changes. The safe way to discard or unstage modifications.</p>
-        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Discard working dir changes</span>
-<span class="cmd">git restore</span> index.html
-
-<span class="c"># Unstage (keep changes in file)</span>
-<span class="cmd">git restore</span> <span class="fl">--staged</span> index.html
-
-<span class="c"># Restore all files</span>
-<span class="cmd">git restore</span> <span class="fl">.</span></div>
-      </div>
-    </div>
 
     <div class="section-label">Writing good commit messages</div>
+
     <div class="card">
       <p>A good commit message is like a subject line in an email — short, clear, and written in the imperative mood.</p>
       <div class="code-block"><span class="c"># ✓ Good commit messages</span>
@@ -1162,6 +1094,99 @@ node_modules/    <span class="c"># installed packages — always re-installable<
         <div class="tip tip-success">The <code>--cached</code> flag tells Git to stop tracking the file without deleting it from your Mac.</div>
       </div>
     </div>
+
+    <hr class="divider">
+    <div class="section-label">Command reference</div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git status</span></div>
+        <p>Shows what has changed since the last commit — untracked files, staged files, and modified files.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git status</span>
+<span class="c"># Short version</span>
+<span class="cmd">git status</span> <span class="fl">-s</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git add</span></div>
+        <p>Moves files from your working directory into the staging area.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Stage one specific file</span>
+<span class="cmd">git add</span> index.html
+
+<span class="c"># Stage all changed files</span>
+<span class="cmd">git add</span> <span class="fl">.</span>
+
+<span class="c"># Stage parts of a file interactively</span>
+<span class="cmd">git add</span> <span class="fl">-p</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git commit</span></div>
+        <p>Saves a permanent snapshot of everything in the staging area.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Commit with a message</span>
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add homepage layout"</span>
+
+<span class="c"># Stage + commit in one step</span>
+<span class="cmd">git commit</span> <span class="fl">-am</span> <span class="str">"Fix navigation bug"</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git log</span></div>
+        <p>Browse the commit history. Every commit has a unique hash ID.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Full history</span>
+<span class="cmd">git log</span>
+
+<span class="c"># Compact one-line view</span>
+<span class="cmd">git log</span> <span class="fl">--oneline</span>
+
+<span class="c"># Visual branch graph</span>
+<span class="cmd">git log</span> <span class="fl">--oneline --graph --all</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git diff</span></div>
+        <p>Shows exactly what changed — line by line — before staging.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Unstaged changes</span>
+<span class="cmd">git diff</span>
+
+<span class="c"># Staged changes (ready to commit)</span>
+<span class="cmd">git diff</span> <span class="fl">--staged</span>
+
+<span class="c"># Compare two commits</span>
+<span class="cmd">git diff</span> abc1234 def5678</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git restore</span></div>
+        <p>Undo changes in the working directory or staging area. Does not touch commit history.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Discard changes to a file (before staging)</span>
+<span class="cmd">git restore</span> calculator.py
+
+<span class="c"># Unstage a file (keep changes in the file)</span>
+<span class="cmd">git restore</span> <span class="fl">--staged</span> calculator.py
+
+<span class="c"># Discard all changes in working directory</span>
+<span class="cmd">git restore</span> <span class="fl">.</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-git">git revert</span> <span style="font-size:10px;color:var(--green);font-weight:500;margin-left:4px">&#10003; safest undo</span></div>
+        <p>Creates a new commit that undoes a specific commit. History is never rewritten. Safe to use after pushing to GitHub or on shared branches.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Revert the most recent commit</span>
+<span class="cmd">git revert</span> HEAD <span class="fl">--no-edit</span>
+
+<span class="c"># Revert a specific commit by its hash</span>
+<span class="cmd">git revert</span> d7f3a19 <span class="fl">--no-edit</span>
+<span class="c"># A new "Revert" commit is added on top &#8212; broken commit stays in history</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-warn">git reset</span> <span style="font-size:10px;color:var(--red);font-weight:500;margin-left:4px">&#9888; local only</span></div>
+        <p>Moves the branch pointer back to a specific commit, removing later commits from history. Only use on work <strong>not yet pushed</strong> to GitHub.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Keep changes staged</span>
+<span class="cmd">git reset</span> <span class="fl">--soft</span> b3c72d1
+
+<span class="c"># Keep changes unstaged (default)</span>
+<span class="cmd">git reset</span> b3c72d1
+
+<span class="c"># Permanently delete all changes &#8212; cannot be undone</span>
+<span class="cmd">git reset</span> <span class="fl">--hard</span> b3c72d1</div>
+      </div>
+    </div>
+
   </div>
 
   <!-- GIT BRANCHING -->
@@ -1565,6 +1590,80 @@ Are you sure you want to continue connecting (yes/no/[fingerprint])?</span></div
 <span class="c"># Push main for the first time (-u sets the upstream link)</span>
 <span class="cmd">git push</span> <span class="fl">-u</span> origin main</div>
         <div class="tip tip-success">After this first push, future pushes only need <code>git push</code> &#8212; no extra flags. The <code>-u</code> flag was a one-time setup that linked your local <code>main</code> to the remote <code>main</code>.</div>
+
+        <div class="section-label" style="margin:16px 0 8px">&#9888; Common remote connection mistakes &#8212; and how to fix them</div>
+
+        <div class="accordion">
+          <div class="accordion-header" onclick="toggleAcc(this)" style="padding:10px 14px">
+            <div style="font-size:13px;font-weight:500;flex:1">Mistake 1 &#8212; Typo in the remote URL (e.g. <code>.gi</code> instead of <code>.git</code>)</div>
+            <div class="accordion-chevron">&#9660;</div>
+          </div>
+          <div class="accordion-body" style="padding:0 14px 14px">
+            <p>The most common mistake when adding a remote is a typo in the URL. If you run <code>git push</code> and see:</p>
+            <div class="code-block"><span class="c">ERROR: Repository not found.
+fatal: Could not read from remote repository.
+Please make sure you have the correct access rights and the repository exists.</span></div>
+            <p>First check what URL Git is using:</p>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git remote</span> <span class="fl">-v</span>
+<span class="c"># origin  git@github.com:waleedju88/git-demo.gi  (fetch)  &#8592; typo: .gi not .git
+# origin  git@github.com:waleedju88/git-demo.gi  (push)</span></div>
+            <p>If the URL is wrong, remove the remote and add it again with the correct URL:</p>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Step 1: remove the wrong remote</span>
+<span class="cmd">git remote remove</span> origin
+
+<span class="c"># Step 2: add it again with the correct URL</span>
+<span class="cmd">git remote add</span> origin git@github.com:<span class="str">your-username/git-demo.git</span>
+
+<span class="c"># Step 3: confirm it looks right</span>
+<span class="cmd">git remote</span> <span class="fl">-v</span>
+<span class="c"># origin  git@github.com:your-username/git-demo.git (fetch) &#8592; correct
+# origin  git@github.com:your-username/git-demo.git (push)</span></div>
+            <div class="tip tip-success">Always copy the URL directly from GitHub &#8212; go to your repo page, click the green <strong>Code</strong> button, select <strong>SSH</strong>, and copy the URL. Never type it by hand.</div>
+          </div>
+        </div>
+
+        <div class="accordion" style="margin-top:8px">
+          <div class="accordion-header" onclick="toggleAcc(this)" style="padding:10px 14px">
+            <div style="font-size:13px;font-weight:500;flex:1">Mistake 2 &#8212; Remote already exists error</div>
+            <div class="accordion-chevron">&#9660;</div>
+          </div>
+          <div class="accordion-body" style="padding:0 14px 14px">
+            <p>If you run <code>git remote add origin ...</code> a second time on the same repo you will see:</p>
+            <div class="code-block"><span class="c">error: remote origin already exists.</span></div>
+            <p>This means a remote called <code>origin</code> is already registered (possibly with a wrong URL). Fix it:</p>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Check what URL is currently registered</span>
+<span class="cmd">git remote</span> <span class="fl">-v</span>
+
+<span class="c"># Remove the existing remote and add the correct one</span>
+<span class="cmd">git remote remove</span> origin
+<span class="cmd">git remote add</span> origin git@github.com:<span class="str">your-username/git-demo.git</span>
+<span class="cmd">git remote</span> <span class="fl">-v</span>   <span class="c"># confirm it is correct now</span></div>
+          </div>
+        </div>
+
+        <div class="accordion" style="margin-top:8px">
+          <div class="accordion-header" onclick="toggleAcc(this)" style="padding:10px 14px">
+            <div style="font-size:13px;font-weight:500;flex:1">Mistake 3 &#8212; Repository not found (repo does not exist on GitHub yet)</div>
+            <div class="accordion-chevron">&#9660;</div>
+          </div>
+          <div class="accordion-body" style="padding:0 14px 14px">
+            <p>The URL is correct and SSH works, but the repo was never created on GitHub. Confirm SSH is working first:</p>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">ssh</span> <span class="fl">-T</span> git@github.com
+<span class="c"># Hi your-username! You've successfully authenticated.  &#8592; SSH is fine
+# If this line appears, the problem is NOT your SSH key &#8212;
+# the repo simply does not exist on GitHub yet.</span></div>
+            <p>Go to GitHub and create the repository:</p>
+            <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;line-height:2;margin:8px 0">
+              1. Go to <code>github.com</code> &#8594; click <strong>+</strong> &#8594; <strong>New repository</strong><br>
+              2. Name it exactly as it appears in your remote URL (e.g. <code>git-demo</code>)<br>
+              3. <strong>Do NOT</strong> tick any initialisation options (no README, no .gitignore)<br>
+              4. Click <strong>Create repository</strong><br>
+              5. Come back to the terminal and push:
+            </div>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git push</span> <span class="fl">-u</span> origin main</div>
+            <div class="tip tip-warn">The repo name in the URL must match the repo name on GitHub <strong>exactly</strong> &#8212; including capitalisation. <code>Git-Demo</code> and <code>git-demo</code> are two different repositories.</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1798,8 +1897,8 @@ Issue #8 &#8212; Title: "Write README with usage examples"
 # Use THAT exact number in your commit message</span>
 
 <span class="c"># Example: if the README issue shows as #11 on GitHub:</span>
-<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Write README with usage examples (fixes #11)"</span>
-<span class="c"># NOT #8 unless GitHub actually shows #8</span></div>
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Write README with usage examples (fixes #15)"</span>
+<span class="c"># Use the ACTUAL number GitHub assigned &#8212; NOT necessarily #8</span></div>
         </div>
 
         <div class="section-label" style="margin:16px 0 8px">Part 2 &#8212; Handle each Issue step by step</div>
@@ -1875,7 +1974,7 @@ Issue #8 &#8212; Title: "Write README with usage examples"
 <span class="c"># print("Is even:        7 even?", is_even(7))</span>
 
 <span class="cmd">git add</span> calculator.py main.py
-<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add is_even helper function (resolves #7)"</span>
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add is_even helper (resolves #7)"</span>
 <span class="cmd">git push</span> <span class="fl">-u</span> origin feature/is-even</div>
         <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;line-height:2;margin:8px 0">
           On GitHub: open PR &#8594; assign Student B as reviewer &#8594; Student B reviews &#8594; approves &#8594; merges &#8594; Issue #7 closes automatically<br>
@@ -1911,7 +2010,7 @@ Issue #8 &#8212; Title: "Write README with usage examples"
 # python3 main.py</span>
 
 <span class="cmd">git add</span> README.md
-<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Write README with all function examples (fixes #8)"</span>
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Write README with usage examples (fixes #8)"</span>
 <span class="cmd">git push</span> <span class="fl">-u</span> origin docs/readme</div>
         <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;line-height:2;margin:8px 0">
           On GitHub: open PR &#8594; assign Student A as reviewer &#8594; Student A reviews &#8594; approves &#8594; merges &#8594; Issue #8 closes automatically<br>
