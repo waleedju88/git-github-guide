@@ -1032,6 +1032,123 @@ node_modules/    <span class="c"># installed packages — always re-installable<
       <div class="tip tip-info">Rule of thumb: your message should complete the sentence <em>"If applied, this commit will…"</em> — for example, "If applied, this commit will <strong>add user login form</strong>."</div>
     </div>
 
+    <div class="section-label">Reverting to a specific commit</div>
+    <div class="accordion open">
+      <div class="accordion-header" onclick="toggleAcc(this)">
+        <div class="accordion-num" style="background:var(--orange-light);color:var(--orange)">&#8635;</div>
+        <div class="accordion-title">How to go back to a previous version of your code</div>
+        <div class="accordion-chevron">&#9660;</div>
+      </div>
+      <div class="accordion-body">
+        <p>Sometimes you commit something that breaks the code and want to go back to a version that was working. We will use the Python calculator to demonstrate this with a real broken-code scenario, then use the safest method to fix it.</p>
+
+        <div class="section-label" style="margin:12px 0 8px">&#128308; Live demo &#8212; break the calculator then revert</div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text)">Step 1 &#8212; Introduce a bug and commit it</p>
+        <p>Edit <code>calculator.py</code> and intentionally break the <code>divide</code> function by removing the safety check and introducing a syntax error:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Edit calculator.py &#8212; replace the divide function with this broken version:</span>
+
+<span class="kw">def</span> <span class="cmd">divide</span>(a, b):
+    <span class="str">"""Return the result of a divided by b."""</span>
+    <span class="kw">return</span> a /      <span class="c"># syntax error &#8212; missing b</span>
+
+<span class="c"># Commit the broken code</span>
+<span class="cmd">git add</span> calculator.py
+<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Update divide function"</span>
+
+<span class="c"># Run the calculator &#8212; it crashes immediately</span>
+<span class="cmd">python</span> main.py
+<span class="c"># SyntaxError: invalid syntax</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Step 2 &#8212; Read the history to find the hash of the broken commit</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="cmd">git log</span> <span class="fl">--oneline</span>
+<span class="c"># d7f3a19  Update divide function        &#8592; the broken commit (most recent)
+# e4a91f2  Update main to show division result
+# b3c72d1  Add divide function to calculator
+# 9e2d410  Add calculator and main modules
+# 4f1a803  Add .gitignore to ignore .DS_Store</span></div>
+        <p>The broken commit is <code>d7f3a19</code>. That is the hash we will revert. Copy the first 7 characters from your own terminal output &#8212; the hash will be different on your machine.</p>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Step 3 &#8212; Revert the broken commit by its hash</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Revert the specific broken commit using its hash</span>
+<span class="cmd">git revert</span> d7f3a19
+<span class="c"># Git opens your text editor with a pre-filled commit message:
+# "Revert: Update divide function"
+# Save the file and close the editor &#8212; the revert commit is created</span></div>
+
+        <div class="tip tip-info"><strong>Editor opens automatically?</strong> If you see a terminal text editor (like Vim or Nano), type <code>:wq</code> then Enter to save and exit in Vim, or press <code>Ctrl+X</code> then <code>Y</code> then Enter in Nano. To avoid this, add <code>--no-edit</code> to keep the default message without opening an editor:</div>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Skip the editor &#8212; use the default revert message automatically</span>
+<span class="cmd">git revert</span> d7f3a19 <span class="fl">--no-edit</span></div>
+
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:14px">Step 4 &#8212; Verify the fix</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Run the calculator &#8212; it works again</span>
+<span class="cmd">python</span> main.py
+<span class="c"># Addition:       5 + 3 = 8
+# Subtraction:    5 - 3 = 2
+# ...all outputs working normally</span>
+
+<span class="c"># Read the history &#8212; notice the original broken commit is still there</span>
+<span class="cmd">git log</span> <span class="fl">--oneline</span>
+<span class="c"># a91c4f1  Revert "Update divide function"  &#8592; new commit that undid the bug
+# d7f3a19  Update divide function            &#8592; broken commit still in history
+# e4a91f2  Update main to show division result
+# b3c72d1  Add divide function to calculator
+# 9e2d410  Add calculator and main modules</span></div>
+
+        <div class="tip tip-success"><strong>This is the key point:</strong> <code>git revert</code> never deletes or rewrites history. The broken commit <code>d7f3a19</code> is still visible in the log. A new commit was added on top that undoes its changes. This is safe to push to GitHub and safe for teammates &#8212; nobody&#8217;s history is disturbed.</div>
+
+        <hr class="divider">
+        <div class="section-label" style="margin:4px 0 10px">&#8505; Other options &#8212; for your information</div>
+
+        <div class="accordion">
+          <div class="accordion-header" onclick="toggleAcc(this)" style="padding:10px 14px">
+            <div style="font-size:13px;font-weight:500;flex:1">Option B &#8212; <code>git reset</code> &nbsp;<span class="badge badge-warn">rewrites history &#8212; local only</span></div>
+            <div class="accordion-chevron">&#9660;</div>
+          </div>
+          <div class="accordion-body" style="padding:0 14px 14px">
+            <p>Moves the branch pointer backwards to a specific commit, removing commits after it from the history. Use this <strong>only on local work that has not been pushed</strong> to GitHub yet.</p>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># --soft: roll back history, keep changes staged</span>
+<span class="cmd">git reset</span> <span class="fl">--soft</span> b3c72d1
+
+<span class="c"># --mixed (default): roll back history, keep changes unstaged</span>
+<span class="cmd">git reset</span> b3c72d1
+
+<span class="c"># --hard: roll back history AND permanently delete all changes</span>
+<span class="cmd">git reset</span> <span class="fl">--hard</span> b3c72d1
+<span class="c"># WARNING: --hard cannot be undone</span></div>
+            <div class="tip tip-warn"><strong>Never use <code>git reset</code> on commits already pushed to GitHub.</strong> It rewrites history and breaks everyone who pulled those commits.</div>
+          </div>
+        </div>
+
+        <div class="accordion" style="margin-top:8px">
+          <div class="accordion-header" onclick="toggleAcc(this)" style="padding:10px 14px">
+            <div style="font-size:13px;font-weight:500;flex:1">Option C &#8212; <code>git checkout &lt;hash&gt;</code> &nbsp;<span class="badge" style="background:var(--blue-light);color:var(--blue)">read-only look</span></div>
+            <div class="accordion-chevron">&#9660;</div>
+          </div>
+          <div class="accordion-body" style="padding:0 14px 14px">
+            <p>Temporarily shows your files as they were at a specific commit. Useful for reading old code or copying a deleted function. Nothing is changed permanently.</p>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># View the code as it was at commit b3c72d1</span>
+<span class="cmd">git checkout</span> b3c72d1
+<span class="c"># "Detached HEAD" state &#8212; normal, nothing is broken
+# Read the files, run the code, then return to the present:</span>
+<span class="cmd">git checkout</span> main</div>
+            <div class="tip tip-info">"Detached HEAD" just means you are viewing history directly. Run <code>git checkout main</code> any time to return to your normal working state.</div>
+          </div>
+        </div>
+
+        <hr class="divider">
+        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;font-size:13px;line-height:2.1;margin-top:4px">
+          <strong>Which option to choose?</strong><br>
+          <strong>Code is broken and already pushed to GitHub</strong> &nbsp;&#8594;&nbsp; <code>git revert &lt;hash&gt;</code> &#8212; always safest<br>
+          <strong>Not pushed yet &#8212; redo last commits</strong> &nbsp;&#8594;&nbsp; <code>git reset --soft</code> or <code>--mixed</code><br>
+          <strong>Not pushed yet &#8212; discard everything</strong> &nbsp;&#8594;&nbsp; <code>git reset --hard</code><br>
+          <strong>Just want to read old code</strong> &nbsp;&#8594;&nbsp; <code>git checkout &lt;hash&gt;</code>
+        </div>
+      </div>
+      </div>
+    </div>
+
+
     <div class="section-label">Common Windows issue &#8212; Thumbs.db &amp; desktop.ini files</div>
     <div class="accordion">
       <div class="accordion-header" onclick="toggleAcc(this)">
