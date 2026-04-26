@@ -1858,7 +1858,7 @@ Please make sure you have the correct access rights and the repository exists.</
         <p>A GitHub <strong>Issue</strong> is a tracked task, feature request, or bug report. Before Student A or B writes a single line of code, they create an Issue so every piece of work is planned, assigned, and traceable. The Issue number is then referenced in commits and PRs to link everything together automatically.</p>
 
         <div class="section-label" style="margin:12px 0 8px">Part 1 &#8212; Create an Issue on GitHub</div>
-        <p>Student A creates all four issues for the next set of calculator features:</p>
+        <p>Student A creates three issues for the next set of calculator features (<strong>Issue #5 was already handled in the Pull Requests demo</strong>):</p>
 
         <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;font-size:13px;line-height:2.1;margin-bottom:12px">
           1. Go to the repo on GitHub &#8594; click the <strong>Issues</strong> tab<br>
@@ -1871,11 +1871,7 @@ Please make sure you have the correct access rights and the repository exists.</
         </div>
 
         <p>Repeat for all four planned features:</p>
-        <div class="code-block"><span class="c">Issue #5 &#8212; Title: "Add square_root function"
-          Description: Add math.sqrt(a) with a guard for negative inputs.
-          Assignee: Student A    Label: enhancement
-
-Issue #6 &#8212; Title: "Add absolute_value function"
+        <div class="code-block"><span class="c">Issue #6 &#8212; Title: "Add absolute_value function"
           Description: Add abs(a) wrapper for consistency with the module API.
           Assignee: Student B    Label: enhancement
 
@@ -1889,8 +1885,8 @@ Issue #8 &#8212; Title: "Write README with usage examples"
 
         <div style="background:var(--red-light);border:0.5px solid var(--red);border-radius:8px;padding:12px 14px;margin:12px 0;font-size:13px;line-height:1.8">
           <div style="font-weight:600;color:var(--red);margin-bottom:6px">&#9888; Important &#8212; issue numbers must match exactly</div>
-          GitHub assigns issue numbers <strong>automatically in the order they are created</strong>, starting from #1 in each repo. The numbers #5&#8211;#8 used here assume a fresh repo with no prior issues.<br><br>
-          In your own repo the README issue might be <code>#3</code> or <code>#12</code> depending on what was already created. A commit with <code>fixes #8</code> in a repo where that issue is actually <code>#6</code> will close the <strong>wrong issue</strong> &#8212; or do nothing at all.<br><br>
+          GitHub assigns issue numbers <strong>automatically in the order they are created</strong>, starting from #1 in each repo. The numbers #6&#8211;#8 used here assume a fresh repo with no prior issues.<br><br>
+          In your own repo the README issue might be <code>#3</code> or <code>#12</code> depending on what was already created. A commit with <code>fixes #8</code> in a repo where that issue is actually <code>#5</code> will close the <strong>wrong issue</strong> &#8212; or do nothing at all.<br><br>
           <strong>Always check the actual number on GitHub first:</strong>
           <div class="code-block" style="margin-top:8px"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Go to: github.com/your-username/git-demo/issues
 # Look at the number next to each issue title
@@ -1903,34 +1899,7 @@ Issue #8 &#8212; Title: "Write README with usage examples"
 
         <div class="section-label" style="margin:16px 0 8px">Part 2 &#8212; Handle each Issue step by step</div>
         <p>Each Issue follows the same full cycle: branch &#8594; code &#8594; commit &#8594; push &#8594; PR &#8594; review &#8594; merge &#8594; sync. Work through them one at a time.</p>
-
-        <hr class="divider">
-
-        <p style="font-size:13px;font-weight:500;color:var(--text);margin-top:4px">&#128308; Issue #5 &#8212; Add square_root function &nbsp;<span style="font-size:11px;font-weight:400;color:var(--muted)">Assigned: Student A</span></p>
-        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">copy</button><span class="c"># Student A &#8212; on their machine</span>
-<span class="cmd">git checkout</span> main
-<span class="cmd">git pull</span>                          <span class="c"># always sync before branching</span>
-<span class="cmd">git checkout</span> <span class="fl">-b</span> feature/square-root
-
-<span class="c"># Add to the TOP of calculator.py:</span>
-<span class="kw">import</span> math
-
-<span class="c"># Add to the BOTTOM of calculator.py:</span>
-<span class="kw">def</span> <span class="cmd">square_root</span>(a):
-    <span class="str">"""Return the square root of a."""</span>
-    <span class="kw">if</span> a &lt; 0: <span class="kw">raise</span> ValueError(<span class="str">"Cannot take root of a negative number"</span>)
-    <span class="kw">return</span> math.sqrt(a)
-
-<span class="c"># Update main.py &#8212; add square_root to the import line and add:</span>
-<span class="c"># print("Square root:    sqrt(9) =", square_root(9))</span>
-
-<span class="cmd">git add</span> calculator.py main.py
-<span class="cmd">git commit</span> <span class="fl">-m</span> <span class="str">"Add square_root function (closes #5)"</span>
-<span class="cmd">git push</span> <span class="fl">-u</span> origin feature/square-root</div>
-        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;line-height:2;margin:8px 0">
-          On GitHub: open PR &#8594; assign Student B as reviewer &#8594; Student B reviews in "Files changed" &#8594; approves &#8594; merges &#8594; Issue #5 closes automatically<br>
-          Both students: <code>git checkout main</code> &amp;&amp; <code>git pull</code>
-        </div>
+        <div class="tip tip-info"><strong>Issue #5 (square_root) was already practised in full in the Pull Requests demo above</strong> &#8212; that section covers branching, writing the function, committing with <code>closes #5</code>, pushing, opening a PR, getting reviewed, and merging. Start here from Issue #6.</div>
 
         <hr class="divider">
 
