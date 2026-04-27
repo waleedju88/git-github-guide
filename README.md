@@ -3,8 +3,11 @@
 A comprehensive interactive course guide for Software Configuration Management.
 
 **Jouf University**
+
 **College of Computer and Information Sciences**
+
 **Software Engineering Department**  
+
 
 
 **Course Instructor:** Dr. Waleed Alhumud  
